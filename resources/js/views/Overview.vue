@@ -45,18 +45,4 @@ export default {
         color: #717171;
         line-height: 25px;
 }
-
-.profit-card-graph-bg {
-    /* background: #43A047;
-    background: -webkit-linear-gradient(45deg, #004eff 0%, #1de9b6 100%);
-    background: linear-gradient(45deg, #004eff 0%, #1de9b6 100%); */
-    box-shadow: 0 4px 15px 0 rgba(96, 99, 98, 0.5);
-}
-
-.sales-card-graph-bg {
-    /* background: #43A047;
-    background: -webkit-linear-gradient(45deg, #00bfa5 0%, #1de9b6 100%);
-    background: linear-gradient(45deg, #00bfa5 0%, #1de9b6 100%); */
-    box-shadow: 0 4px 15px 0 rgba(96, 99, 98, 0.5);
-}
 </style>

@@ -29,22 +29,10 @@
                 <li class="nav-item">
                     <span class="nav-link"><i class="fas fa-user"></i>&nbsp; Manage Users</span>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="#users" data-toggle="collapse" aria-expanded="false" aria-controls="users">
-                        Users <i class="float-right fas fa-caret-down"></i>
-                    </a>
+                    <router-link class="nav-link" :to="{ name: 'users.index' }">Users</router-link>
                 </li>
-                <div class="collapse" id="users">
-                    <ul class="nav flex-column nav-sub-menu">
-                        <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'users.create' }">Create New User</router-link>
-                        </li>
-                        <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'users.index' }">View Users</router-link>
-                        </li>
-                    </ul>
-                </div>
-                
             </ul>
         </div>
     </div>
