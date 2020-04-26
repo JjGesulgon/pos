@@ -11,6 +11,11 @@
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'items.create' }">
                         <i class="fas fa-plus"></i>&nbsp; Create New Item
                     </router-link>
+
+                    <button type="button" class="btn btn-primary btn-sm" @click.prevent.default="openSearchModal()">
+                        <i class="fas fa-search"></i>&nbsp;
+                        Search Item
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -105,10 +110,6 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal()">
-                        <i class="fas fa-search"></i>&nbsp;
-                        Search Items
-                    </button>
                     <label class="sr-only" for="number_of_items">Number of Item</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -129,7 +130,7 @@
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="search">Search Users</h5>
+                        <h5 class="modal-title" id="search">Search Item</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
