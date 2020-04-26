@@ -15,7 +15,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <router-link class="nav-link" :to="{ name: 'overview' }">Items</router-link>
+                    <router-link class="nav-link" :to="{ name: 'items.index' }">Items</router-link>
                 </li>
 
                 <li class="nav-item">

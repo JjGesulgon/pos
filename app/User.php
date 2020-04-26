@@ -46,4 +46,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * The user has many items
+     *
+     * @return array object
+     */
+    public function item()
+    {
+        return $this->hasMany(Item::class);
+    }
 }

@@ -16,4 +16,11 @@ Route::group(['middleware' => ['auth:api']], function () {
             'index', 'store', 'show', 'update', 'destroy'
         ]
     ]);
+
+    // Items
+    Route::resource('items', 'ItemsController', [
+        'only' => [
+            'index', 'store', 'show', 'update', 'destroy'
+        ]
+    ]);
 });
