@@ -19,8 +19,20 @@
                 </li>
 
                 <li class="nav-item">
-                    <router-link class="nav-link" :to="{ name: 'overview' }">Transactions</router-link>
+                    <a class="nav-link" href="#transactions" data-toggle="collapse" aria-expanded="false" aria-controls="transactions">
+                        Transactions <i class="float-right fas fa-caret-down"></i>
+                    </a>
                 </li>
+                <div class="collapse" id="transactions">
+                    <ul class="nav flex-column nav-sub-menu">
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'transactions.index' }">Manage Transactions</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'users.index' }">View Transaction History</router-link>
+                        </li>
+                    </ul>
+                </div>
             </ul>
         </div>
 
