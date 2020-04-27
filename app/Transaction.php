@@ -6,16 +6,16 @@ use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Item extends Model
+class Transaction extends Model
 {
     use SoftDeletes, Filtering;
 
      /**
-     * Items table.
+     * Transaction table.
      *
      * @var string
      */
-    protected $table = 'items';
+    protected $table = 'transactions';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,7 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'name', 'amount', 'stocks_available'
+        'user_id', 'transaction_number', 'total_revenue'
     ];
 
      /**
@@ -37,6 +37,13 @@ class Item extends Model
 
         static::creating(function ($model) {
             $model->user_id = auth('api')->user()->id;
+            
+            $latestTransaction = Transaction::orderBy('created_at','DESC')->first();
+            if (!$latestTransaction){
+                return $model->transaction_number = '#'.str_pad(1, 8, "0", STR_PAD_LEFT);
+            }
+            return $model->transaction_number = '#'.str_pad($latestTransaction->id + 1, 8, "0", STR_PAD_LEFT);
+            
         });
 
         static::updating(function ($model) {
@@ -45,13 +52,23 @@ class Item extends Model
     }
 
      /**
-     * The Items belongs to a user.
+     * The experience belongs to a user.
      *
      * @return object
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The Transaction has many Transaction Items
+     *
+     * @return object
+     */
+    public function transactionItem()
+    {
+        return $this->hasMany(TransactionItem::class);
     }
 }
 

@@ -6,7 +6,7 @@ use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Item extends Model
+class TransactionItem extends Model
 {
     use SoftDeletes, Filtering;
 
@@ -15,7 +15,7 @@ class Item extends Model
      *
      * @var string
      */
-    protected $table = 'items';
+    protected $table = 'transaction_items';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,7 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'name', 'amount', 'stocks_available'
+        'user_id', 'transaction_id', 'item_id'
     ];
 
      /**
@@ -45,13 +45,23 @@ class Item extends Model
     }
 
      /**
-     * The Items belongs to a user.
+     * The Transaction Item belongs to a user.
      *
      * @return object
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+     /**
+     * Transaction Item belongs to a transaction.
+     * 
+     * @return object
+     */
+    public function transactionItem()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 }
 

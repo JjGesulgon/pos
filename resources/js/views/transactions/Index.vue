@@ -43,13 +43,6 @@
                                 <td>{{ item.amount }}</td>
                                 <td>{{ item.stocks_available }}</td>
                                 <td>
-                                    <!-- <router-link class="text-secondary" :to="{ name: 'items.edit', params: { id: item.id }}">
-                                        <i class="fas fa-edit"></i>&nbsp;
-                                        <strong>Edit</strong>
-                                    </router-link> -->
-                                    <!-- <input type="number" id="qty" name="quantity">
-                                    <strong class="text-secondary">Qty</strong>
-                                    &nbsp; | &nbsp; -->
                                     <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
                                     <i class="fas fa-cart-arrow-down"></i>&nbsp;
                                         <strong>Add to cart</strong>
@@ -194,7 +187,7 @@
                                 <br><br>
                                 <div class="float-right">
                                     <div>
-                                        <strong>Total Revenue:</strong>
+                                        <strong>Total Bill:</strong>
                                         {{ priceSummation() }}
                                     </div>
                                     <div>
@@ -209,7 +202,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="search">Proceed</button>
+                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="createTransaction()">Proceed</button>
                         </div>
                     </div>
                 </div>
@@ -271,7 +264,7 @@
                     <div class="card-text">
                         <br><br>
                         <div class="text-right">
-                            <strong>Total Revenue:</strong>
+                            <strong>Total Bill:</strong>
                             {{ priceSummation() }}
                         </div>
                         <div class="text-right" v-if="priceSummation() != 0">
@@ -586,7 +579,6 @@
                     });
 
                     this.$router.go()
-                    // this.$router.push({ name: 'transactions.index' });
                 }).catch(err => {
                     console.log(err);
                 });
@@ -600,6 +592,31 @@
             },
             removeFromCart(item){
                 this.cart.splice(this.cart.findIndex(x => x.id = item.id), 1);
+            },
+            createTransaction(){
+                this.ifReady = false;
+
+                if((parseInt(this.cash).toFixed(2) - this.priceSummation()) < 0){
+                    alert('Insufficient Funds')
+                } else{
+                    var transaction = {
+                        total_revenue: this.priceSummation(),
+                        cart: this.cart
+                    }
+
+                    axios.post('/api/transactions', transaction).then(res => {
+                        Broadcast.$emit('ToastMessage', {
+                            message: 'Transaction Created Successfully'
+                        });
+
+                        $('#checkout-modal').modal('hide');
+                        this.cart = [];
+                        this.cash = '';
+                    }).catch(err => {
+                        this.ifReady = true;
+                        console.log(err);
+                    });
+                }
             }
         }
     }

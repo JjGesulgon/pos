@@ -7,9 +7,9 @@ use App\Item;
 class ItemRepository extends Repository
 {
     /**
-     * Create new instance of skill repository.
+     * Create new instance of item repository.
      *
-     * @param Item Skill skill model
+     * @param Item Item item model
      */
     public function __construct(Item $item)
     {

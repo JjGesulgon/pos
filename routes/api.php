@@ -23,4 +23,11 @@ Route::group(['middleware' => ['auth:api']], function () {
             'index', 'store', 'show', 'update', 'destroy'
         ]
     ]);
+
+    // Transactions
+    Route::resource('transactions', 'TransactionsController', [
+        'only' => [
+            'index', 'store', 'show', 'update', 'destroy'
+        ]
+    ]);
 });
