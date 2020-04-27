@@ -53,5 +53,15 @@ class Item extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * The Item has one transaction Item.
+     *
+     * @return object
+     */
+    public function transactionItem()
+    {
+        return $this->hasOne(TransactionItem::class);
+    }
 }
 

@@ -124,7 +124,7 @@ class TransactionsController extends Controller
      */
     public function show($id)
     {
-        if (! $transaction = $this->transaction->findOrFail($id)) {
+        if (! $transaction = $this->transaction->getTransaction($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);

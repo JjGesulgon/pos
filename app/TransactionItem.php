@@ -63,5 +63,15 @@ class TransactionItem extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    /**
+     * Transaction Item belongs to one item.
+     * 
+     * @return object
+     */
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
 }
 

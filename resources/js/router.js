@@ -23,7 +23,8 @@ const ItemsEdit   = () => import('./views/items/Edit');
 /**
  * Transactions
  */
-const TransactionsIndex  = () => import('./views/transactions/Index');
+const ManageTransactions  = () => import('./views/transactions/ManageTransactions');
+const TransactionHistory  = () => import('./views/transactions/TransactionHistory');
 
 export default new Router({
     mode: 'history',
@@ -43,6 +44,7 @@ export default new Router({
         { path: '/items/:id/edit', name: 'items.edit', component: ItemsEdit },
 
         //Transactions
-        { path: '/transactions', name: 'transactions.index', component: TransactionsIndex },
+        { path: '/transactions', name: 'transactions.index', component: ManageTransactions },
+        { path: '/transaction-history', name: 'transaction_history.index', component: TransactionHistory },
     ]
 });

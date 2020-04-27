@@ -16,7 +16,8 @@ class TransactionRepository extends Repository
         parent::__construct($transaction);
         $this->transaction = $transaction;
     }
-     /**
+
+    /**
      * Get the transactions
      *
      * @return array json object
@@ -24,5 +25,16 @@ class TransactionRepository extends Repository
     public function getAll()
     {
         return $this->model->all();
+    }
+
+    /**
+     * Get the transaction with transaction items with items
+     *
+     * @return array json object
+     */
+    public function getTransaction($id)
+    {
+        $transaction = $this->transaction::with('transactionItem.item')->findOrFail($id);
+        return $transaction;
     }
 }

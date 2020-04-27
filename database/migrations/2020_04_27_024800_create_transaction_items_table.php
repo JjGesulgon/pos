@@ -23,6 +23,7 @@ class CreateTransactionItemsTable extends Migration
             $table->foreign('item_id')->references('id')->on('items');
             $table->integer('qty');
             $table->timestamps();
+            $table->softDeletes('deleted_at', 0);
         });
     }
 
