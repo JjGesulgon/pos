@@ -43,10 +43,18 @@
                                 <td>{{ item.amount }}</td>
                                 <td>{{ item.stocks_available }}</td>
                                 <td>
-                                    <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
-                                    <i class="fas fa-cart-arrow-down"></i>&nbsp;
-                                        <strong>Add to cart</strong>
-                                    </label>
+                                    <div v-if="item.stocks_available != 0">
+                                        <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
+                                        <i class="fas fa-cart-arrow-down"></i>&nbsp;
+                                            <strong>Add to cart</strong>
+                                        </label>
+                                    </div>
+                                    <div v-else>
+                                        <label class="text-danger">
+                                            <i class="fas fa-exclamation-circle"></i>&nbsp;
+                                            <strong>Not Available</strong>
+                                        </label>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -201,7 +209,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="container mb-4" v-if="this.ifReady">
+                            <div class="progress" height="30px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" v-else>
                             <button type="button" class="btn btn-success btn-sm" @click.prevent.default="createTransaction()">Proceed</button>
                         </div>
                     </div>
@@ -247,7 +260,7 @@
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.amount }}</td>
                                 <td>
-                                    <input type="number" id="qty" name="quantity" v-model="item.qty">
+                                    <input type="number" id="qty" name="quantity" v-model="item.qty" v-bind:max="item.stocks_available">
                                 </td>
                                 <td>
                                     {{ (item.qty * item.amount).toFixed(2) }}
@@ -325,7 +338,8 @@
                 },
                 error: null,
                 showProgress: false,
-                pageNumbers: []
+                pageNumbers: [],
+                ifReady: false
             };
         },
 
@@ -594,24 +608,40 @@
                 this.cart.splice(this.cart.findIndex(x => x.id = item.id), 1);
             },
             createTransaction(){
-                this.ifReady = false;
 
                 if((parseInt(this.cash).toFixed(2) - this.priceSummation()) < 0){
                     alert('Insufficient Funds')
                 } else{
+                    this.ifReady = true; 
                     var transaction = {
                         total_revenue: this.priceSummation(),
                         cart: this.cart
                     }
 
                     axios.post('/api/transactions', transaction).then(res => {
+                        for(let cartItem = 0; cartItem < this.cart.length; cartItem++){
+                            let data = {
+                                name: this.cart[cartItem].name,
+                                amount: this.cart[cartItem].amount,
+                                stocks_available: this.cart[cartItem].stocks_available - this.cart[cartItem].qty
+                            };
+
+                            axios.patch('/api/items/' + this.cart[cartItem].id, data).then(res => {
+                                console.log('Item Update Successful');
+                            }).catch(err => {
+                                console.log(err);
+                            });
+                        }
+
+                        $('#checkout-modal').modal('hide');
+
                         Broadcast.$emit('ToastMessage', {
                             message: 'Transaction Created Successfully'
                         });
 
-                        $('#checkout-modal').modal('hide');
                         this.cart = [];
                         this.cash = '';
+                        this.$router.go();
                     }).catch(err => {
                         this.ifReady = true;
                         console.log(err);

@@ -86,7 +86,7 @@
 
                 axios.patch('/api/items/' + this.$route.params.id, data).then(res => {
                     Broadcast.$emit('ToastMessage', {
-                        message: 'User Updated Successfully'
+                        message: 'Item Updated Successfully'
                     });
 
                     this.$router.push({
