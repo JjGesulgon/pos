@@ -55,7 +55,7 @@ class Item extends Model
     }
 
     /**
-     * The item has one transaction Item.
+     * The item has many transaction Item.
      *
      * @return object
      */
