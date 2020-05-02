@@ -10,7 +10,7 @@
 /public/mix-manifest.json
 /vendor
 .env
-.env.backup
+.rnd
 .phpunit.result.cache
 horizon.log
 laravel-echo-server.lock

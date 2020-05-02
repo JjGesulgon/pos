@@ -10,11 +10,11 @@ class TransactionItem extends Model
 {
     use SoftDeletes, Filtering;
 
-     /**
-     * Items table.
-     *
-     * @var string
-     */
+    /**
+    * Items table.
+    *
+    * @var string
+    */
     protected $table = 'transaction_items';
 
     /**
@@ -26,11 +26,11 @@ class TransactionItem extends Model
         'user_id', 'transaction_id', 'item_id'
     ];
 
-     /**
-     * Run functions on boot.
-     *
-     * @return void
-     */
+    /**
+    * Run functions on boot.
+    *
+    * @return void
+    */
     public static function boot()
     {
         parent::boot();
@@ -44,29 +44,29 @@ class TransactionItem extends Model
         });
     }
 
-     /**
-     * The Transaction Item belongs to a user.
-     *
-     * @return object
-     */
+    /**
+    * The transaction item belongs to a user.
+    *
+    * @return object
+    */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-     /**
-     * Transaction Item belongs to a transaction.
-     * 
-     * @return object
-     */
+    /**
+    * The transaction item belongs to a transaction.
+    *
+    * @return object
+    */
     public function transactionItem()
     {
         return $this->belongsTo(Transaction::class);
     }
 
     /**
-     * Transaction Item belongs to one item.
-     * 
+     * The transaction item belongs to an item.
+     *
      * @return object
      */
     public function item()
@@ -74,4 +74,3 @@ class TransactionItem extends Model
         return $this->belongsTo(Item::class);
     }
 }
-
