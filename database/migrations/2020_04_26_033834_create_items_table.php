@@ -16,12 +16,14 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->string('name', 100);
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
+            $table->string('name');
             $table->decimal('amount', 8, 2);
             $table->integer('stocks_available');
             $table->timestamps();
-            $table->softDeletes('deleted_at', 0);
+            $table->softDeletes('deleted_at');
         });
     }
 

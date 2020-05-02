@@ -16,14 +16,20 @@ class CreateTransactionItemsTable extends Migration
         Schema::create('transaction_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
             $table->unsignedBigInteger('transaction_id');
-            $table->foreign('transaction_id')->references('id')->on('transactions');
+            $table->foreign('transaction_id')
+                ->references('id')
+                ->on('transactions');
             $table->unsignedBigInteger('item_id');
-            $table->foreign('item_id')->references('id')->on('items');
-            $table->integer('qty');
+            $table->foreign('item_id')
+                ->references('id')
+                ->on('items');
+            $table->integer('quantity');
             $table->timestamps();
-            $table->softDeletes('deleted_at', 0);
+            $table->softDeletes('deleted_at');
         });
     }
 
