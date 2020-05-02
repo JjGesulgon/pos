@@ -59,7 +59,7 @@ class TransactionsController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'total_revenue'  => 'required|numeric',
+            'total_amount'  => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -75,9 +75,9 @@ class TransactionsController extends Controller
             $transItem = new TransactionItem;
             $transItem->transaction_id = $trans->id;
             $transItem->item_id = $request->cart[$ctr]['id'];
-            $transItem->qty = $request->cart[$ctr]['qty'];
+            $transItem->quantity = $request->cart[$ctr]['qty'];
 
-            $trans->transactionItem()->save($transItem);
+            $trans->transactionItems()->save($transItem);
         }
 
         return response()->json([

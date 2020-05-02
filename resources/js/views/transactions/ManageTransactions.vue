@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-7">
             <div class="card" >
                 <div class="card-header clearfix">
                     <div class="float-left">
@@ -13,10 +13,10 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="col-lg-4 col-md-12">
-                        <div class="form-group">
-                            <label>Search Item</label>
-                            <input type="text" class="form-control" v-model="itemName" @input="onSearch">
+                    <div>
+                        <div class="form-group row">
+                            <label class="col-md-8 text-right"> Search Item</label>
+                            <input type="text" class="form-control col-md-4" v-model="itemName" @input="onSearch">
                         </div>
                     </div>
                     <table class="table table-hover table-sm">
@@ -168,7 +168,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="search">Checkout</h5>
+                            <h5 class="modal-title" id="search">Confirm Payment</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -203,7 +203,7 @@
                                     </div>
                                     <div>
                                         <strong>Cash:</strong>
-                                        <input type="number" id="cash" name="cash" v-model="cash">
+                                        <input type="number" id="cash" name="cash" v-model="cash" disabled>
                                     </div>
                                     <div>
                                         <strong>Change:</strong>
@@ -244,7 +244,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="card">
                 <div class="card-header"><i class="fas fa-shopping-cart"></i>&nbsp; Cart</div>
                 <div class="card-body">
@@ -279,15 +279,25 @@
                     </table>
                     <div class="card-text">
                         <br><br>
-                        <div class="text-right">
-                            <strong>Total Bill:</strong>
-                            {{ priceSummation() }}
-                        </div>
-                        <div class="text-right" v-if="priceSummation() != 0">
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="openCheckoutModal()">
-                                <i class="fas fa-cash-register"></i>&nbsp;
-                                Checkout
-                            </button>
+                        <div class="float-right">
+                            <div>
+                                <strong>Total Bill:</strong>
+                                {{ priceSummation() }}
+                            </div>
+                            <div>
+                                <strong>Cash:</strong>
+                                <input type="number" id="cash" name="cash" v-model="cash">
+                            </div>
+                            <div>
+                                <strong>Change:</strong>
+                                {{ (this.cash - priceSummation()).toFixed(2)}}
+                            </div>
+                            <div v-if="priceSummation() != 0">
+                                <button type="button" class="btn btn-success btn-sm" @click.prevent.default="openCheckoutModal()">
+                                    <i class="fas fa-cash-register"></i>&nbsp;
+                                    Checkout
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -565,7 +575,11 @@
                 $('#search-modal').modal('show');
             },
             openCheckoutModal() {
-                $('#checkout-modal').modal('show');
+                if((parseInt(this.cash).toFixed(2) - this.priceSummation()) < 0){
+                    alert('Insufficient Funds')
+                }else{
+                    $('#checkout-modal').modal('show');
+                }
             },
             addToCart(item) {
                 const found = this.cart.some(el => el.id === item.id);
@@ -612,7 +626,7 @@
                 } else{
                     this.ifReady = true; 
                     var transaction = {
-                        total_revenue: this.priceSummation(),
+                        total_amount: this.priceSummation(),
                         cart: this.cart
                     }
 

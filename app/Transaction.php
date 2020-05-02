@@ -23,7 +23,7 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'transaction_number', 'total_revenue'
+        'user_id', 'number', 'total_amount'
     ];
 
     /**
@@ -41,10 +41,10 @@ class Transaction extends Model
             $latestTransaction = Transaction::orderBy('created_at', 'DESC')->first();
 
             if (!$latestTransaction) {
-                return $model->transaction_number = '#'.str_pad(1, 8, "0", STR_PAD_LEFT);
+                return $model->number = '#'.str_pad(1, 8, "0", STR_PAD_LEFT);
             }
 
-            return $model->transaction_number = '#'.str_pad($latestTransaction->id + 1, 8, "0", STR_PAD_LEFT);
+            return $model->number = '#'.str_pad($latestTransaction->id + 1, 8, "0", STR_PAD_LEFT);
         });
 
         static::updating(function ($model) {
@@ -67,7 +67,7 @@ class Transaction extends Model
      *
      * @return array object
      */
-    public function transactionItem()
+    public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
     }

@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header clearfix">
                 <div class="float-left">
-                    <router-link class="text-primary" :to="{ transaction_number: 'transaction_history.index' }">Transaction History</router-link>
+                    <router-link class="text-primary" :to="{ number: 'transaction_history.index' }">Transaction History</router-link>
                     /
                     <span class="text-secondary">View Transaction History</span>
                 </div>
@@ -38,8 +38,8 @@
                     </thead>
                     <tbody v-if="transaction_history">
                         <tr v-for="transaction in transaction_history">
-                            <td>{{ transaction.transaction_number }}</td>
-                            <td>{{ transaction.total_revenue }}</td>
+                            <td>{{ transaction.number }}</td>
+                            <td>{{ transaction.total_amount }}</td>
                             <td>{{ formatDate(transaction.created_at) }}</td>
                             <td>
                                 <label class="text-secondary clickableText" @click.prevent.default="openTransactionItemModal(transaction.id)">
@@ -121,7 +121,7 @@
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="transactionItems">Transaction {{ transactionItems.transaction_number}}</h5>
+                        <h5 class="modal-title" id="transactionItems">Transaction {{ transactionItems.number}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -148,9 +148,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="transaction in transactionItems.transaction_item">
+                                <tr v-for="transaction in transactionItems.transaction_items">
                                     <td>{{ transaction.item.name }}</td>
-                                    <td>{{ transaction.qty }}</td>
+                                    <td>{{ transaction.quantity }}</td>
                                     <td>{{ transaction.item.amount }}</td>
                                 </tr>
                             </tbody>
@@ -159,7 +159,7 @@
                         <div class="float-right" v-if="transactionItems">
                             <div>
                                 <strong>Total Revenue:</strong>
-                                {{ transactionItems.total_revenue }}
+                                {{ transactionItems.total_amount }}
                             </div>
                         </div>
                     </div>
@@ -183,12 +183,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>transaction_number</label>
-                            <input type="text" class="form-control" v-model="transaction_number" autocomplete="off" maxlength="255">
+                            <label>number</label>
+                            <input type="text" class="form-control" v-model="number" autocomplete="off" maxlength="255">
                         </div>
                         <div class="form-group">
                             <label>Amount</label>
-                            <input type="text" class="form-control" v-model="total_revenue" autocomplete="off" maxlength="255">
+                            <input type="text" class="form-control" v-model="total_amount" autocomplete="off" maxlength="255">
                         </div>
                         <div class="form-group">
                             <label>Order By</label>
@@ -210,8 +210,8 @@
 </template>
 
 <script>
-    const getTransaction = (page, per_page, transaction_number, total_revenue, order_by, callback) => {
-        const params = { page, per_page, transaction_number, total_revenue, order_by };
+    const getTransaction = (page, per_page, number, total_amount, order_by, callback) => {
+        const params = { page, per_page, number, total_amount, order_by };
 
         axios.get('/api/transactions', { params }).then(res => {
             callback(null, res.data);
@@ -230,9 +230,9 @@
         data() {
             return {
                 transaction_history: null,
-                transaction_number: '',
+                number: '',
                 transactionItems: '',
-                total_revenue: '',
+                total_amount: '',
                 transactionID: '',
                 ifReady: false,
                 order_by: 'desc',
@@ -259,18 +259,18 @@
 
         beforeRouteEnter (to, from, next) {
             if (to.query.per_page == null) {
-                getTransaction(to.query.page, 10, to.query.transaction_number, to.query.total_revenue, to.query.order_by, (err, data) => {
+                getTransaction(to.query.page, 10, to.query.number, to.query.total_amount, to.query.order_by, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             } else {
-                getTransaction(to.query.page, to.query.per_page, to.query.transaction_number, to.query.total_revenue, to.query.order_by, (err, data) => {
+                getTransaction(to.query.page, to.query.per_page, to.query.number, to.query.total_amount, to.query.order_by, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             }
         },
 
         beforeRouteUpdate (to, from, next) {
-            getTransaction(to.query.page, this.meta.per_page, this.transaction_number, this.total_revenue, this.order_by, (err, data) => {
+            getTransaction(to.query.page, this.meta.per_page, this.number, this.total_amount, this.order_by, (err, data) => {
                 this.setData(err, data);
                 next();
             });
@@ -319,12 +319,12 @@
             goToFirstPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -332,12 +332,12 @@
             goToPage(page = null) {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -345,12 +345,12 @@
             goToLastPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: this.meta.last_page,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -358,12 +358,12 @@
             goToNextPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: this.nextPage,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -371,12 +371,12 @@
             goToPreviousPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: this.prevPage,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -449,12 +449,12 @@
             changePerPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
@@ -463,19 +463,19 @@
                 $('#search-modal').modal('hide');
                 this.showProgress = true;
                 this.$router.push({
-                    transaction_number: 'transaction_history.index',
+                    number: 'transaction_history.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        transaction_number: this.transaction_number,
-                        total_revenue: this.total_revenue,
+                        number: this.number,
+                        total_amount: this.total_amount,
                         order_by: this.order_by
                     }
                 });
             },
             clear() {
-                this.transaction_number = '';
-                this.total_revenue = '';
+                this.number = '';
+                this.total_amount = '';
                 this.order_by = 'desc';
             },
             openSearchModal() {
