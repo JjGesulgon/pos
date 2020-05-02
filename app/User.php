@@ -56,4 +56,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(Item::class);
     }
+
+    /**
+     * The user has many Transactions
+     *
+     * @return array object
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * The user has many TransactionsItems
+     *
+     * @return array object
+     */
+    public function transactionItems()
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
 }
