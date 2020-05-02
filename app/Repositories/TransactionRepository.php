@@ -34,7 +34,7 @@ class TransactionRepository extends Repository
      */
     public function getTransaction($id)
     {
-        $transaction = $this->transaction::with('transactionItem.item')->findOrFail($id);
+        $transaction = $this->transaction::with('transactionItems.item')->findOrFail($id);
         return $transaction;
     }
 }
