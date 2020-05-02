@@ -1,6 +1,6 @@
 
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Nunito:100,200,300,400,500,600,700,800,900');
 
 // Vue Select
 @import '~vue-select/src/scss/vue-select.scss';
@@ -171,10 +171,6 @@ table > caption {
     content: none !important;
 }
 
-.v-select .vs__actions {
-    padding: 8px 6px 0 3px;
-}
-
 .vs__dropdown-toggle {
     padding: 0 !important;
     border: 0 !important;
@@ -186,8 +182,8 @@ table > caption {
     padding: 0 !important;
 }
 
-.v-select .open-indicator {
-    margin-top: -6px;
+.v-select .vs__open-indicator {
+    margin-top: 3px;
 }
 
 .custom-control-label {
@@ -198,3 +194,6 @@ table > caption {
     background-color: #fff !important;
 }
 
+.badge {
+    padding: 0.25em 0.4em 0.20em 0.4em;
+}

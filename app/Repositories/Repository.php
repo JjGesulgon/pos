@@ -260,13 +260,20 @@ abstract class Repository
     /**
      * Search the specified data from the storage.
      *
-     * @param  string $column
-     * @param  string $key
+     * @param  string|null $column
+     * @param  string|null $value
      * @return boolean
      */
-    public function search($column, $key)
+    public function search($column = null, $value = null)
     {
-        return $this->model->where($column, 'LIKE', '%' . $key .'%')->get();
+        if ($column == null) {
+            return $this->model->where('name', 'LIKE', '%' . $value .'%')
+                                ->orderBy('created_at', 'desc')
+                                ->limit(10)
+                                ->get();
+        }
+
+        return $this->model->where($column, 'LIKE', '%' . $value .'%')->get();
     }
 
     /**

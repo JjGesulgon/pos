@@ -9,15 +9,16 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/auth/user', 'AuthController@user');
 
     // Users
-    Route::match(['put', 'patch'], 'users/{user}/restore', 'UsersController@restore');
-    Route::delete('users/{user}/force-delete', 'UsersController@forceDestroy');
-    Route::resource('users', 'UsersController', [
+    Route::match(['put', 'patch'], '/users/{user}/restore', 'UsersController@restore');
+    Route::delete('/users/{user}/force-delete', 'UsersController@forceDestroy');
+    Route::resource('/users', 'UsersController', [
         'only' => [
             'index', 'store', 'show', 'update', 'destroy'
         ]
     ]);
 
     // Items
+    Route::get('/items/search', 'ItemsController@search');
     Route::resource('items', 'ItemsController', [
         'only' => [
             'index', 'store', 'show', 'update', 'destroy'

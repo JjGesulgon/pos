@@ -9,13 +9,16 @@
                         <span class="text-secondary">Item List</span>
                     </div>
                     <div class="float-right">
-                        <button type="button" class="btn btn-primary btn-sm" @click.prevent.default="openSearchModal()">
-                            <i class="fas fa-search"></i>&nbsp;
-                            Search Item
-                        </button>
+
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="col-lg-4 col-md-12">
+                        <div class="form-group">
+                            <label>Search Item</label>
+                            <input type="text" class="form-control" v-model="itemName" @input="onSearch">
+                        </div>
+                    </div>
                     <table class="table table-hover table-sm">
                         <caption>
                             <div class="row">
@@ -45,7 +48,7 @@
                                 <td>
                                     <div v-if="item.stocks_available != 0">
                                         <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
-                                        <i class="fas fa-cart-arrow-down"></i>&nbsp;
+                                            <i class="fas fa-cart-arrow-down"></i>&nbsp;
                                             <strong>Add to cart</strong>
                                         </label>
                                     </div>
@@ -267,7 +270,7 @@
                                 </td>
                                 <td>
                                     <label class="text-danger clickableText" @click.prevent.default="removeFromCart(item)">
-                                    <i class="fas fa-trash-alt"></i></i>&nbsp;
+                                        <i class="fas fa-trash-alt"></i></i>&nbsp;
                                         <strong>Remove</strong>
                                     </label>
                                 </td>
@@ -316,6 +319,7 @@
                 items: null,
                 name: '',
                 amount: '',
+                itemName: '',
                 itemID: '',
                 totalBill: '',
                 cart: [],
@@ -544,20 +548,14 @@
                     }
                 });
             },
-            search() {
-                $('#search-modal').modal('hide');
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: 1,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        amount: this.amount,
-                        order_by: this.order_by
-                    }
-                });
+            onSearch() {
+                this.search(this.itemName, this);
             },
+            search: _.debounce((itemName, vm) => {
+                axios.get(`/api/items/search?value=${escape(itemName)}`).then(res => {
+                    vm.items = res.data;
+                });
+            }, 250),
             clear() {
                 this.name = '';
                 this.amount = '';
@@ -600,8 +598,8 @@
             priceSummation() {
                 var total = 0;
                 this.cart.forEach(el => {
-                     total += (el.amount * el.qty)
-                    })
+                 total += (el.amount * el.qty)
+             })
                 return total.toFixed(2);
             },
             removeFromCart(item){
