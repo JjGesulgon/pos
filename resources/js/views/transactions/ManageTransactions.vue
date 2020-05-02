@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div>
+                    <div class="col-md-12">
                         <div class="form-group row">
                             <label class="col-md-8 text-right"> Search Item</label>
                             <input type="text" class="form-control col-md-4" v-model="itemName" @input="onSearch">
