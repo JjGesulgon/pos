@@ -59,9 +59,9 @@ class Item extends Model
      *
      * @return object
      */
-    public function transactionItem()
+    public function transactionItems()
     {
-        return $this->hasOne(TransactionItem::class);
+        return $this->hasMany(TransactionItem::class);
     }
 }
 
