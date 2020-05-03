@@ -3,27 +3,24 @@
         <div class="col-md-6">
             <div class="card" >
                 <div class="card-header clearfix">
-                    <div class="float-left">
-                        <router-link class="text-primary" :to="{ name: 'transactions.index' }">Transactions</router-link>
-                        /
-                        <span class="text-secondary">Item List</span>
-                    </div>
-                    <div class="float-right">
-
+                    <div class="row">
+                        <div class="col-md-6">
+                            <router-link class="text-primary" :to="{ name: 'transactions.index' }">Transactions</router-link>
+                            /
+                            <span class="text-secondary">Item List</span>
+                        </div>
+                        <div class="float-right col-md-6">
+                            <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="col-md-12">
-                        <div class="form-group row">
-                            <label class="col-md-8 text-right"> Search Item</label>
-                            <input type="text" class="form-control col-md-4" v-model="itemName" @input="onSearch">
-                        </div>
-                    </div>
                     <table class="table table-hover table-sm">
                         <caption>
                             <div class="row">
                                 <div class="col-md-9">
-                                    List of items - Total Items {{ this.meta.total }}
+                                    List of Items
+                                    <!-- List of items - Total Items {{ this.meta.total }} -->
                                 </div>
                                 <div class="col-md-3">
                                     <div class="progress" height="30px;" v-if="showProgress">
@@ -192,13 +189,6 @@
                                             {{ (item.qty * item.amount).toFixed(2) }}
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td scope="row" colspan="4">&nbsp;</td>
-                                    </tr>
-                                    <tr class="bg-transparent">
-                                        <td scope="row" colspan="2"></td>
-                                        <td scope="row"><b>Total Amount</b></td>
-                                    </tr>
                                 </tbody>
                             </table>
                             <div class="card-text">
@@ -282,31 +272,41 @@
                                     </label>
                                 </td>
                             </tr>
+                            <tr v-if="priceSummation() != 0">
+                                <td scope="row" colspan="5"></td>
+                            </tr>
+                            <tr class="no-border" v-if="priceSummation() != 0">
+                                <td scope="row" colspan="4"></td>
+                                <td scope="row">
+                                        <strong>Total Bill:</strong>
+                                        {{ priceSummation() }}
+                                </td>
+                            </tr>
+                            <tr class="no-border" v-if="priceSummation() != 0">
+                                <td scope="row" colspan="4"></td>
+                                <td scope="row">
+                                        <strong>Cash:</strong>
+                                        <input type="number" id="cash" name="cash" v-model="cash">
+                                </td>
+                            </tr>
+                            <tr class="no-border" v-if="priceSummation() != 0">
+                                <td scope="row" colspan="4"></td>
+                                <td scope="row">
+                                    <strong>Change:</strong>
+                                    {{ (this.cash - priceSummation()).toFixed(2)}}
+                                </td>
+                            </tr>
+                            <tr class="no-border" v-if="priceSummation() != 0">
+                                <td scope="row" colspan="4"></td>
+                                <td scope="row">
+                                    <button type="button" class="btn btn-success btn-sm" @click.prevent.default="openCheckoutModal()">
+                                        <i class="fas fa-cash-register"></i>&nbsp;
+                                        Checkout
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
-                    <div class="card-text">
-                        <br><br>
-                        <div class="float-right">
-                            <div>
-                                <strong>Total Bill:</strong>
-                                {{ priceSummation() }}
-                            </div>
-                            <div>
-                                <strong>Cash:</strong>
-                                <input type="number" id="cash" name="cash" v-model="cash">
-                            </div>
-                            <div>
-                                <strong>Change:</strong>
-                                {{ (this.cash - priceSummation()).toFixed(2)}}
-                            </div>
-                            <div v-if="priceSummation() != 0">
-                                <button type="button" class="btn btn-success btn-sm" @click.prevent.default="openCheckoutModal()">
-                                    <i class="fas fa-cash-register"></i>&nbsp;
-                                    Checkout
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -675,5 +675,10 @@
 .clickableText:hover {
     text-decoration: underline;
     cursor: pointer
+}
+
+.table>tbody>tr.no-border>td,
+.table>tbody>tr.no-border>th {
+  border-top: none;
 }
 </style>>
