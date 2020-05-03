@@ -273,6 +273,9 @@
                                 </td>
                             </tr>
                             <tr v-if="priceSummation() != 0">
+                                <td scope="row" colspan="5"><br></td>
+                            </tr>
+                            <tr v-if="priceSummation() != 0">
                                 <td scope="row" colspan="5"></td>
                             </tr>
                             <tr class="no-border" v-if="priceSummation() != 0">
