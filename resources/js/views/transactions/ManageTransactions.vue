@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-6">
             <div class="card" >
                 <div class="card-header clearfix">
                     <div class="float-left">
@@ -244,7 +244,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header"><i class="fas fa-shopping-cart"></i>&nbsp; Cart</div>
                 <div class="card-body">
