@@ -192,6 +192,13 @@
                                             {{ (item.qty * item.amount).toFixed(2) }}
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td scope="row" colspan="4">&nbsp;</td>
+                                    </tr>
+                                    <tr class="bg-transparent">
+                                        <td scope="row" colspan="2"></td>
+                                        <td scope="row"><b>Total Amount</b></td>
+                                    </tr>
                                 </tbody>
                             </table>
                             <div class="card-text">
