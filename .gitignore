@@ -3,11 +3,11 @@
 /public/storage
 /storage/*.key
 /storage/app/public
-/public/css/*
-/public/js/*
-/public/*.js
-/public/*.js.map
-/public/mix-manifest.json
+# /public/css/*
+# /public/js/*
+# /public/*.js
+# /public/*.js.map
+# /public/mix-manifest.json
 /vendor
 .env
 .rnd
