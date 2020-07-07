@@ -20,8 +20,7 @@ class CreateStocksTable extends Migration
                 ->references('id')
                 ->on('corporations')
                 ->onDelete('cascade');
-            $table->bigInteger('stockable_id')->unsigned();
-            $table->string('stockable_type');
+            $table->morphs('stockable', 'stockable_index');
             $table->bigInteger('item_id')->unsigned();
             $table->foreign('item_id')
                 ->references('id')
