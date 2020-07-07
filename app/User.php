@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Traits\Filtering;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +10,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Filtering, HasApiTokens, Notifiable, SoftDeletes;
+    use HasApiTokens, Notifiable, SoftDeletes, Filtering;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'mobile_number'
     ];
 
     /**
@@ -46,34 +45,4 @@ class User extends Authenticatable
      * @var array
      */
     protected $dates = ['deleted_at'];
-
-    /**
-     * The user has many items
-     *
-     * @return array object
-     */
-    public function item()
-    {
-        return $this->hasMany(Item::class);
-    }
-
-    /**
-     * The user has many Transactions
-     *
-     * @return array object
-     */
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
-
-    /**
-     * The user has many TransactionsItems
-     *
-     * @return array object
-     */
-    public function transactionItems()
-    {
-        return $this->hasMany(TransactionItem::class);
-    }
 }
