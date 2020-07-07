@@ -32,7 +32,7 @@
 
                         <br>
                         
-                        <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'users.index' }"><i class="fas fa-chevron-left"></i> &nbsp;Back</router-link>
+                        <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'items.index' }"><i class="fas fa-chevron-left"></i> &nbsp;Back</router-link>
                         <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> &nbsp;Create New Item</button>
                     </form>
                 </div>
