@@ -3,21 +3,22 @@
         <div class="card">
             <div class="card-header clearfix">
                 <div class="float-left">
-                    <router-link class="text-primary" :to="{ name: 'item-types.index' }">Items</router-link>
+                    <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
                     /
-                    <span class="text-secondary">View Items</span>
+                    <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
+                    /
+                    <span class="text-secondary">View Corporations</span>
                 </div>
                 <div class="float-right">
-                    <router-link class="btn btn-success btn-sm" :to="{ name: 'items.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Item</router-link>
+                    <router-link class="btn btn-success btn-sm" :to="{ name: 'corporations.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Corporation</router-link>
                 </div>
             </div>
-
             <div class="card-body">
                 <table class="table table-hover table-sm">
                     <caption>
                         <div class="row">
                             <div class="col-md-9">
-                                List of Items - Total Items {{ this.meta.total }}
+                                List of Corporations - Total Items {{ this.meta.total }}
                             </div>
                             <div class="col-md-3">
                                 <div class="progress" height="30px;" v-if="showProgress">
@@ -28,21 +29,23 @@
                     </caption>
                     <thead>
                         <tr>
-                            <th scope="col">Stock Keeping Unit</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
-                    <tbody v-if="items">
-                        <tr :key="item.id" v-for="item in items">
-                            <td>{{ item.stock_keeping_unit }}</td>
-                            <td>{{ item.name }}</td>
+                    <tbody v-if="corporations">
+                        <tr v-for="{ id, name, description, street, zip_code, country, fax } in corporations">
+                            <td>{{ name }}</td>
+                            <td>{{ description }}</td>
+                            <td>{{ street }}, {{ country}}, {{ zip_code }}</td>
                             <td>
-                                <router-link class="text-secondary" :to="{ name: 'items.view', params: { id: item.id }}">
+                                <router-link class="text-secondary" :to="{ name: 'corporations.view', params: { id: id }}">
                                     <i class="fas fa-envelope-open-text"></i>&nbsp; View
                                 </router-link>
                                 &nbsp;|&nbsp;
-                                <router-link class="text-secondary" :to="{ name: 'items.edit', params: { id: item.id }}">
+                                <router-link class="text-secondary" :to="{ name: 'corporations.edit', params: { id: id }}">
                                     <i class="fas fa-edit"></i>&nbsp; Edit
                                 </router-link>
                             </td>
@@ -64,7 +67,7 @@
                         <li class="page-item">
                             <a class="page-link" href="#" @click.prevent="goToFirstPage">First</a>
                         </li>
-                        <li class="page-item" :key="pageNumber" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
+                        <li class="page-item" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
                             <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)">{{ pageNumber }}</a>
                         </li>
                         <li class="page-item" v-bind:class="isNextDisabled">
@@ -85,7 +88,7 @@
                         <li class="page-item">
                             <a class="page-link" href="#" @click.prevent="goToFirstPage">First</a>
                         </li>
-                        <li class="page-item" :key="pageNumber" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
+                        <li class="page-item" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
                             <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)">{{ pageNumber }}</a>
                         </li>
                         <li class="page-item" v-bind:class="isNextDisabled">
@@ -100,12 +103,12 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <button type="button" class="btn btn-primary mr-2" @click.prevent="openSearchModal">Search For Items</button>
+                    <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Corporations</button>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
                         </div>
-                        <select class="custom-select" id="number_of_items" v-model="meta.per_page" v-on:change="changePerPage()">
+                        <select class="custom-select" id="number_of_items" v-model="meta.per_page" v-on:change="changePerPage">
                             <option value="10">10</option>
                             <option value="15">15</option>
                             <option value="20">20</option>
@@ -115,21 +118,16 @@
                 </form>
             </div>
 
-            <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchArticles" aria-hidden="true">
+            <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchCorporations" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Search For Items</h5>
+                            <h5 class="modal-title">Search Corporations</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label>Stock Keeping Unit</label>
-                                <input type="text" class="form-control" v-model="stock_keeping_unit" autocomplete="off" minlength="2" maxlength="255" required>
-                            </div>
-
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="name" autocomplete="off" minlength="2" maxlength="255" required>
@@ -138,6 +136,52 @@
                             <div class="form-group">
                                 <label>Description</label>
                                 <textarea class="form-control" v-model="description" maxlength="1000" required></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Street</label>
+                                        <input type="text" class="form-control" v-model="street" autocomplete="off" minlength="2" maxlength="255">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>City</label>
+                                        <input type="text" class="form-control" v-model="city" autocomplete="off" minlength="2" maxlength="255">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>State</label>
+                                        <input type="text" class="form-control" v-model="state" autocomplete="off" minlength="2" maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Zip Code</label>
+                                        <input type="text" class="form-control" v-model="zip_code" autocomplete="off" minlength="2" maxlength="255">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" class="form-control" v-model="country" autocomplete="off" minlength="2" maxlength="255" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Fax</label>
+                                        <input type="text" class="form-control" v-model="fax" autocomplete="off" minlength="2" maxlength="255">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -149,39 +193,48 @@
                             </div>
                         </div>
                         <div class="modal-footer clearfix">
-                            <button type="button" class="btn btn-danger btn-sm" @click.prevent="clear">Clear</button>
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent="search">Search</button>
+                            <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="clear">Clear</button>
+                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="search">Search</button>
                             <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
 
 <script>
-    const getItems = (
+    const getCorporations = (
         page,
         per_page,
-        stock_keeping_unit,
         name,
         description,
+        street,
+        city,
+        state,
+        zip_code,
+        country,
+        fax,
         order_by,
         callback
         ) => {
         const params = {
             page,
             per_page,
-            stock_keeping_unit,
             name,
             description,
+            street,
+            city,
+            state,
+            zip_code,
+            country,
+            fax,
             order_by,
         };
 
-        axios.get('/api/items', { params }).then(res => {
-            // console.log(res.data);
+        axios.get('/api/corporations', { params }).then(res => {
+            console.log(res);
             callback(null, res.data);
         }).catch(error => {
             if (error.response.status == 401) {
@@ -197,10 +250,15 @@
     export default {
         data() {
             return {
-                items: null,
-                stock_keeping_unit: '',
+                corporations: null,
                 name: '',
                 description: '',
+                street: '',
+                city: '',
+                state: '',
+                zip_code: '',
+                country: '',
+                fax: '',
                 order_by: 'desc',
                 meta: {
                     current_page: null,
@@ -225,24 +283,34 @@
 
         beforeRouteEnter (to, from, next) {
             if (to.query.per_page == null) {
-                getItems(
+                getCorporations(
                     to.query.page,
                     10,
-                    to.query.stock_keeping_unit,
                     to.query.name,
                     to.query.description,
+                    to.query.street,
+                    to.query.city,
+                    to.query.state,
+                    to.query.zip_code,
+                    to.query.country,
+                    to.query.fax,
                     to.query.order_by,
                     (err, data) => {
                         next(vm => vm.setData(err, data));
                     }
                     );
             } else {
-                getItems(
+                getCorporations(
                     to.query.page,
                     to.query.per_page,
-                    to.query.stock_keeping_unit,
                     to.query.name,
                     to.query.description,
+                    to.query.street,
+                    to.query.city,
+                    to.query.state,
+                    to.query.zip_code,
+                    to.query.country,
+                    to.query.fax,
                     to.query.order_by,
                     (err, data) => {
                         next(vm => vm.setData(err, data));
@@ -252,12 +320,17 @@
         },
 
         beforeRouteUpdate (to, from, next) {
-            getItems(
+            getCorporations(
                 to.query.page,
                 this.meta.per_page,
-                this.stock_keeping_unit,
                 this.name,
                 this.description,
+                this.street,
+                this.city,
+                this.state,
+                this.zip_code,
+                this.country,
+                this.fax,
                 this.order_by,
                 (err, data) => {
                     this.setData(err, data);
@@ -296,13 +369,18 @@
             goToFirstPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     },
                 });
@@ -310,13 +388,18 @@
             goToPage(page = null) {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     },
                 });
@@ -324,13 +407,18 @@
             goToLastPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: this.meta.last_page,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     },
                 });
@@ -338,13 +426,17 @@
             goToNextPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: this.nextPage,
-                        per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
-                        name: this.name,
+                        per_page: this.meta.per_page,name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     },
                 });
@@ -352,24 +444,29 @@
             goToPreviousPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: this.prevPage,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     }
                 });
             },
-            setData(err, { data: items, links, meta }) {
+            setData(err, { data: corporations, links, meta }) {
                 this.pageNumbers = [];
 
                 if (err) {
                     this.error = err.toString();
                 } else {
-                    this.items = items;
+                    this.corporations = corporations;
                     this.links = links;
                     this.meta = meta;
                 }
@@ -430,13 +527,18 @@
             changePerPage() {
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     }
                 });
@@ -445,22 +547,32 @@
                 $('#searchModal').modal('hide');
                 this.showProgress = true;
                 this.$router.push({
-                    name: 'items.index',
+                    name: 'corporations.index',
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
                         name: this.name,
                         description: this.description,
+                        street: this.street,
+                        city: this.city,
+                        state: this.state,
+                        zip_code: this.zip_code,
+                        country: this.country,
+                        fax: this.fax,
                         order_by: this.order_by
                     }
                 });
             },
             clear() {
-                this.stock_keeping_unit = '';
-                this.name               = '';
-                this.description        = '';
-                this.order_by           = 'desc';
+                this.name        = '';
+                this.description = '';
+                this.street      = '';
+                this.city        = '';
+                this.state       = '';
+                this.zip_code     = '';
+                this.country     = '';
+                this.fax         = '';
+                this.order_by                = 'desc';
             },
             openSearchModal() {
                 $('#searchModal').modal('show');

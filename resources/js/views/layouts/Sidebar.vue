@@ -15,8 +15,56 @@
                 </li>
 
                 <li class="nav-item">
-                    <router-link class="nav-link" :to="{ name: 'items.index' }">Items</router-link>
+                    <a class="nav-link" href="#contacts" data-toggle="collapse" aria-expanded="false" aria-controls="contacts">
+                        Contacts <i class="float-right fas fa-caret-down"></i>
+                    </a>
                 </li>
+                <div class="collapse" id="contacts">
+                    <ul class="nav flex-column nav-sub-menu">
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'contacts.create' }">Create New Contact</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'contacts.index' }">View Contacts</router-link>
+                        </li>
+                    </ul>
+                </div>
+
+                <li class="nav-item">
+                    <router-link class="nav-link" :to="{ name: 'stocks.index' }">Stocks</router-link>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#items" data-toggle="collapse" aria-expanded="false" aria-controls="items">
+                        Items <i class="float-right fas fa-caret-down"></i>
+                    </a>
+                </li>
+                <div class="collapse" id="items">
+                    <ul class="nav flex-column nav-sub-menu">
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'items.create' }">Create New Item</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'items.index' }">View Items</router-link>
+                        </li>
+                    </ul>
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#sales-item-prices" data-toggle="collapse" aria-expanded="false" aria-controls="sales-item-prices">
+                        Sales Item Prices <i class="float-right fas fa-caret-down"></i>
+                    </a>
+                </li>
+                <div class="collapse" id="sales-item-prices">
+                    <ul class="nav flex-column nav-sub-menu">
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'sales-item-prices.create' }">Create New Sales Item Price</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'sales-item-prices.index' }">View Sales Item Prices</router-link>
+                        </li>
+                    </ul>
+                </div>
 
                 <li class="nav-item">
                     <a class="nav-link" href="#transactions" data-toggle="collapse" aria-expanded="false" aria-controls="transactions">
@@ -51,9 +99,5 @@
 </template>
 
 <script>
-    export default {
-        mounted() {
-
-        }
-    }
+    export default {}
 </script>

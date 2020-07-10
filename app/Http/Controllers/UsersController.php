@@ -33,17 +33,17 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = UserResource::collection(
+        $data = UserResource::collection(
             $this->user->paginateWithFilters(request(), request()->per_page, request()->order_by)
         );
 
-        if (! $users) {
+        if (! $data) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $users;
+        return $data;
     }
 
     /**

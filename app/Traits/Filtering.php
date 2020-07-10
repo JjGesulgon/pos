@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of filtering package.
+ * This file is part of laravel filtering package.
  *
  * (c) Gether Kestrel B. Medel <gether.medel@gmail.com>
  *
@@ -11,17 +11,17 @@
 
 /*
 |--------------------------------------------------------------------------
-| Auto filtering with pagination and archiving for laravel models
+| Auto filtering with pagination laravel models
 |--------------------------------------------------------------------------
 |
 | Here is where all the filtering logic happens, from filtering the
-| current model to filtering other models and entrust trait.
+| current model to filtering relationships and entrust trait.
 |
 */
 
 namespace App\Traits;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 trait Filtering
 {
@@ -30,12 +30,22 @@ trait Filtering
      *
      * @return array
      */
-    public static function archives()
+    public static function scopeArchives($query, $request)
     {
-        return static::selectRaw('year(created_at) year, monthname(created_at) month, count(*) published')
+        $query->selectRaw('year(created_at) year, monthname(created_at) month, count(*) published')
             ->groupBy('year', 'month')
-            ->orderByRaw('created_at desc')
-            ->get();
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc');
+
+        if ($month = $request->month) {
+            $query->whereMonth('created_at', Carbon::parse($month)->month);
+        }
+
+        if ($year = $request->year) {
+            $query->whereYear('created_at', $year);
+        }
+
+        return $query->get();
     }
 
     /**
@@ -58,39 +68,33 @@ trait Filtering
      */
     public function scopeFilter($query, $request)
     {
-        if ($month = $request->month) {
-            $query->whereMonth('created_at', Carbon::parse($month)->month);
-        }
-
-        if ($year = $request->year) {
-            $query->whereYear('created_at', $year);
-        }
-
         $query->where(function ($query) use ($request) {
             foreach ($request->all() as $key => $value) {
-                if (in_array(self::convertToColumn($key), $this->fillable)) {
-                    if (strpos($key, 'searchColumn') !== false &&
-                        strpos($key, 'FromModel') == false &&
-                        ! is_array($value) && $value !== null
+                $column = self::convertToColumn($key);
+
+                if (in_array($column, $this->fillable) && $value != null) {
+                    if ((strpos($key, 'FromModel') == false &&
+                        strrpos($key, 'Model') == false &&
+                        strpos($key, 'from_') == false &&
+                        strpos($key, 'from_model_') == false) &&
+                        ! is_array($value)
                     ) {
-                        $query->orWhere(self::convertToColumn($key), 'Like', '%' . $value . '%');
+                        $query->orWhere($column, 'Like', '%' . $value . '%');
                     }
 
-                    if (strpos($key, 'searchArrayColumn') !== false &&
-                        strpos($key, 'FromModel') == false &&
+                    if ((strpos($key, 'FromModel') == false &&
+                        strrpos($key, 'Model') == false &&
+                        strpos($key, 'from_') == false &&
+                        strpos($key, 'from_model_') == false) &&
                         is_array($value)
                     ) {
                         $query->orWhere(function ($query) use ($key, $value) {
                             foreach ($value as $arrayValue) {
                                 if ($arrayValue !== null) {
-                                    $query->orWhere(self::convertToColumn($key), 'Like', '%' . $arrayValue . '%');
+                                    $query->orWhere($column, 'Like', '%' . $arrayValue . '%');
                                 }
                             }
                         });
-                    }
-
-                    if (! is_array($value) && $value !== null) {
-                        $query->orWhere(self::convertToColumn($key), 'Like', '%' . $value . '%');
                     }
                 }
             }
@@ -109,12 +113,12 @@ trait Filtering
     public function checkTraits($query, $request)
     {
         foreach (class_uses($this) as $trait) {
-            if (strpos($trait, 'FilterEntrust') !== false) {
-                $this->filterEntrust($query, $request);
+            if (strpos($trait, 'FilterRelationships') !== false) {
+                $this->filterRelationships($query, $request);
             }
 
-            if (strpos($trait, 'FilterOtherModels') !== false) {
-                $this->filterOtherModels($query, $request);
+            if (strpos($trait, 'FilterEntrust') !== false) {
+                $this->filterEntrust($query, $request);
             }
         }
     }
@@ -127,21 +131,19 @@ trait Filtering
      */
     public function convertToColumn($key)
     {
-        $string = preg_replace('/searchColumn|searchArrayColumn|searchArray|search|FromModel.+|Model.+/i', '', $key);
+        $column = preg_replace('/searchColumn|searchArrayColumn|searchArray|search|FromModel.+|Model.+|from_model_.+|from_.+/i', '', $key);
 
-        preg_match_all('/[A-Z]/', $string, $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/[A-Z]/', $column, $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $key => $matchPair) {
-            $string = str_replace($matchPair[0], '_' . lcfirst($matchPair[0]), $string);
+            $column = str_replace($matchPair[0], '_' . lcfirst($matchPair[0]), $column);
         }
 
-        return $string;
-
-        /*if (preg_match('/\_/', $string, $matches)) {
-            return preg_replace('/_/', '', $string, 1);
+        if (strpos($column, '_') !== false && ! preg_match('/\_./', $column)) {
+            return preg_replace('/\_/', '', $column, 1);
         } else {
-            return $string;
-        }*/
+            return $column;
+        }
     }
 
     /**
@@ -166,7 +168,6 @@ trait Filtering
             parse_str(parse_url($request->path() . '?' . http_build_query(($request->all())), PHP_URL_QUERY), $output);
 
             unset($output['_method']);
-
             unset($output['_token']);
 
             $uri = $request->path() . '?' . http_build_query($output);

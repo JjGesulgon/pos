@@ -3,27 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\ItemResource;
-use App\Repositories\ItemRepository;
+use App\Http\Resources\StockResource;
+use App\Repositories\StockRepository;
 use Illuminate\Support\Facades\Validator;
 
-class ItemsController extends Controller
+class StocksController extends Controller
 {
     /**
-     * Item repository.
+     * Stock repository.
      *
-     * @var App\Repositories\ItemRepository
+     * @var App\Repositories\StockRepository
      */
-    protected $item;
+    protected $stock;
 
     /**
-     * Create new instance of item controller.
+     * Create new instance of  controller.
      *
-     * @param ItemRepository item Item repository
+     * @param StockRepository stock Stock repository
      */
-    public function __construct(ItemRepository $item)
+    public function __construct(StockRepository $stock)
     {
-        $this->item = $item;
+        $this->stock = $stock;
     }
 
     /**
@@ -33,8 +33,28 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $data = ItemResource::collection(
-            $this->item->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        $data = StockResource::collection(
+            $this->stock->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        );
+
+        if (! $data) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllStocksOfItem($id)
+    {
+        $data = StockResource::collection(
+            $this->stock->paginatePerItemWithFilters(request(), $id, request()->per_page, request()->order_by)
         );
 
         if (! $data) {
@@ -55,16 +75,7 @@ class ItemsController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'item_type_id'                   => 'required|integer',
-            'item_classification_id'         => 'required|integer',
-            'default_unit_of_measurement_id' => 'required|integer',
-            'sales_account_id'               => 'integer|nullable',
-            'cost_of_goods_sold_account_id'  => 'integer|nullable',
-            'expense_account_id'             => 'integer|nullable',
-            'asset_account_id'               => 'integer|nullable',
-            'name'                           => 'required|string|max:255',
-            'description'                    => 'required|string|max:255',
-            'stock_keeping_unit'             => 'required|string|max:255'
+
         ]);
 
         if ($validator->fails()) {
@@ -74,7 +85,7 @@ class ItemsController extends Controller
             ], 400);
         }
 
-        if (! $this->item->store($request)) {
+        if (! $this->stock->store($request)) {
             return response()->json([
                 'message' => 'Failed to store resource'
             ], 500);
@@ -93,7 +104,7 @@ class ItemsController extends Controller
      */
     public function show($id)
     {
-        if (! $item = $this->item->findOrFail($id)) {
+        if (! $stock = $this->stock->findOrFail($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);
@@ -101,7 +112,7 @@ class ItemsController extends Controller
 
         return response()->json([
             'message' => 'Resource successfully retrieve',
-            'item' => $item
+            'stock' => $stock
         ], 200);
     }
 
@@ -115,16 +126,7 @@ class ItemsController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'item_type_id'                   => 'required|integer',
-            'item_classification_id'         => 'required|integer',
-            'default_unit_of_measurement_id' => 'required|integer',
-            'sales_account_id'               => 'integer|nullable',
-            'cogs_account_id'                => 'integer|nullable',
-            'expense_account_id'             => 'integer|nullable',
-            'asset_account_id'               => 'integer|nullable',
-            'name'                           => 'required|string|max:255',
-            'description'                    => 'required|string|max:255',
-            'stock_keeping_unit'             => 'required|string|max:255'
+
         ]);
 
         if ($validator->fails()) {
@@ -134,7 +136,7 @@ class ItemsController extends Controller
             ], 400);
         }
 
-        if (! $this->item->update($request, $id)) {
+        if (! $this->stock->update($request, $id)) {
             return response()->json([
                 'message' => 'Failed to update resource'
             ], 500);
@@ -153,7 +155,7 @@ class ItemsController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->item->findOrFail($id)->delete()) {
+        if (! $this->stock->findOrFail($id)->delete()) {
             return response()->json([
                 'message' => 'Failed to delete resource'
             ], 400);
@@ -172,7 +174,7 @@ class ItemsController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->item->restore($id)) {
+        if (! $this->stock->restore($id)) {
             return response()->json([
                 'message' => 'Failed to restore resource'
             ], 400);
@@ -191,7 +193,7 @@ class ItemsController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->item->forceDestroy($id)) {
+        if (! $this->stock->forceDestroy($id)) {
             return response()->json([
                 'message' => 'Failed to permanently delete resource'
             ], 400);
@@ -207,17 +209,17 @@ class ItemsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllItems()
+    public function getAllStock()
     {
-        if (cache()->has('items')) {
+        if (cache()->has('stocks')) {
             return response()->json([
-                'response' => true,
-                'message'  => 'Resources successfully retrieve.',
-                'items'    => cache('items', 5)
+                'response'   => true,
+                'message'    => 'Resources successfully retrieve.',
+                'stocks' => cache('stocks', 5)
             ], 200);
         }
 
-        if (! $items = $this->item->all()) {
+        if (! $stocks = $this->stock->all()) {
             return response()->json([
                 'response' => false,
                 'message'  => 'Resources does not exist.'
@@ -225,9 +227,45 @@ class ItemsController extends Controller
         }
 
         return response()->json([
-            'response' => true,
-            'message'  => 'Resources successfully retrieve.',
-            'items'    => $items
+            'response'   => true,
+            'message'    => 'Resources successfully retrieve.',
+            'stocks' => $stocks
         ], 200);
+    }
+
+    /**
+     * Retrieve all resources.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllStockPerLocationType($locationType)
+    {
+        if (! $stocks = $this->stock->paginateWithFiltersPerLocationType(request(), $locationType, request()->per_page, request()->order_by)) {
+            return response()->json([
+                'response' => false,
+                'message'  => 'Resources does not exist.'
+            ], 400);
+        }
+
+        return response()->json([
+            'response'   => true,
+            'message'    => 'Resources successfully retrieve.',
+            'stocks' => $stocks
+        ], 200);
+    }
+
+    public function getAllStocksPerLocation()
+    {
+        $data = StockResource::collection(
+            $this->stock->paginateWithFiltersPerLocation(request(), request()->per_page, request()->order_by)
+        );
+
+        if (! $data) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+
+        return $data;
     }
 }

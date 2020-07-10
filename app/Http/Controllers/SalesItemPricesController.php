@@ -2,30 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SalesItemPriceResource;
+use App\Repositories\SalesItemPriceRepository;
 use Illuminate\Http\Request;
-use App\Http\Resources\ItemResource;
-use App\Repositories\ItemRepository;
 use Illuminate\Support\Facades\Validator;
 
-class ItemsController extends Controller
+class SalesItemPricesController extends Controller
 {
     /**
-     * Item repository.
+     * SalesItemPrice repository.
      *
-     * @var App\Repositories\ItemRepository
+     * @var App\Repositories\SalesItemPriceRepository
      */
-    protected $item;
-
+    protected $salesItemPrice;
+    
     /**
-     * Create new instance of item controller.
+     * Create new instance of salesItemPrice controller.
      *
-     * @param ItemRepository item Item repository
+     * @param SalesItemPriceRepository salesItemPrice SalesItemPrice repository
      */
-    public function __construct(ItemRepository $item)
+    public function __construct(SalesItemPriceRepository $salesItemPrice)
     {
-        $this->item = $item;
+        $this->salesItemPrice = $salesItemPrice;
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -33,19 +33,15 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $data = ItemResource::collection(
-            $this->item->paginateWithFilters(request(), request()->per_page, request()->order_by)
-        );
-
-        if (! $data) {
+        if (! $data = SalesItemPriceResource::collection($this->salesItemPrice->paginate())) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
-
+    
         return $data;
     }
-
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -55,36 +51,27 @@ class ItemsController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'item_type_id'                   => 'required|integer',
-            'item_classification_id'         => 'required|integer',
-            'default_unit_of_measurement_id' => 'required|integer',
-            'sales_account_id'               => 'integer|nullable',
-            'cost_of_goods_sold_account_id'  => 'integer|nullable',
-            'expense_account_id'             => 'integer|nullable',
-            'asset_account_id'               => 'integer|nullable',
-            'name'                           => 'required|string|max:255',
-            'description'                    => 'required|string|max:255',
-            'stock_keeping_unit'             => 'required|string|max:255'
+            
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors'  => $validator->errors()
             ], 400);
         }
-
-        if (! $this->item->store($request)) {
+    
+        if (! $this->salesItemPrice->store($request)) {
             return response()->json([
                 'message' => 'Failed to store resource'
             ], 500);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully stored'
         ], 200);
     }
-
+    
     /**
      * Display the specified resource.
      *
@@ -93,18 +80,18 @@ class ItemsController extends Controller
      */
     public function show($id)
     {
-        if (! $item = $this->item->findOrFail($id)) {
+        if (! $salesItemPrice = $this->salesItemPrice->findOrFail($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully retrieve',
-            'item' => $item
+            'sales_item_price' => $salesItemPrice
         ], 200);
     }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -115,36 +102,27 @@ class ItemsController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'item_type_id'                   => 'required|integer',
-            'item_classification_id'         => 'required|integer',
-            'default_unit_of_measurement_id' => 'required|integer',
-            'sales_account_id'               => 'integer|nullable',
-            'cogs_account_id'                => 'integer|nullable',
-            'expense_account_id'             => 'integer|nullable',
-            'asset_account_id'               => 'integer|nullable',
-            'name'                           => 'required|string|max:255',
-            'description'                    => 'required|string|max:255',
-            'stock_keeping_unit'             => 'required|string|max:255'
+            
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors'  => $validator->errors()
             ], 400);
         }
-
-        if (! $this->item->update($request, $id)) {
+    
+        if (! $this->salesItemPrice->update($request, $id)) {
             return response()->json([
                 'message' => 'Failed to update resource'
             ], 500);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully updated'
         ], 200);
     }
-
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -153,17 +131,17 @@ class ItemsController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->item->findOrFail($id)->delete()) {
+        if (! $this->salesItemPrice->findOrFail($id)->delete()) {
             return response()->json([
                 'message' => 'Failed to delete resource'
             ], 400);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully deleted'
         ], 200);
     }
-
+    
     /**
      * Restore the specified resource from storage.
      *
@@ -172,17 +150,17 @@ class ItemsController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->item->restore($id)) {
+        if (! $this->salesItemPrice->restore($id)) {
             return response()->json([
                 'message' => 'Failed to restore resource'
             ], 400);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully restored'
         ], 200);
     }
-
+    
     /**
      * Forcefully remove the specified resource from storage.
      *
@@ -191,33 +169,26 @@ class ItemsController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->item->forceDestroy($id)) {
+        if (! $this->salesItemPrice->forceDestroy($id)) {
             return response()->json([
                 'message' => 'Failed to permanently delete resource'
             ], 400);
         }
-
+    
         return response()->json([
             'message' => 'Resource successfully deleted permanently'
         ], 200);
     }
 
     /**
-     * Retrieve all resources.
+     * Retrieve all sales item prices using specified id.
      *
+     * @param  int $id id
      * @return \Illuminate\Http\Response
      */
-    public function getAllItems()
+    public function getSalesItemPrices($id)
     {
-        if (cache()->has('items')) {
-            return response()->json([
-                'response' => true,
-                'message'  => 'Resources successfully retrieve.',
-                'items'    => cache('items', 5)
-            ], 200);
-        }
-
-        if (! $items = $this->item->all()) {
+        if (! $itemPricelists = $this->salesItemPrice->getSalesItemPrices($id)) {
             return response()->json([
                 'response' => false,
                 'message'  => 'Resources does not exist.'
@@ -225,9 +196,9 @@ class ItemsController extends Controller
         }
 
         return response()->json([
-            'response' => true,
-            'message'  => 'Resources successfully retrieve.',
-            'items'    => $items
+            'response'          => true,
+            'message'           => 'Resources successfully retrieve.',
+            'sales_item_prices' => $itemPricelists
         ], 200);
     }
 }
