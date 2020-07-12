@@ -1,31 +1,32 @@
 <template>
     <div>
-        <div class="card">
-            <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                /
-                <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
-                /
-                <span class="text-secondary">Select Corporation</span>
-            </div>
-            <div class="card-body">
-                <form v-on:submit.prevent="selectCorporation">
-                    <div class="form-group">
-                        <label for="name">Select Corporation</label>
-                        <div v-if="ifReady">
+        <div v-if="ifReady">
+            <div class="card">
+                <div class="card-header">
+                    <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
+                    /
+                    <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
+                    /
+                    <span class="text-secondary">Select Corporation</span>
+                </div>
+                <div class="card-body">
+                    <form v-on:submit.prevent="selectCorporation">
+                        <div class="form-group">
+                            <label for="name">Select Corporation</label>
+                            
                             <select class="form-control" v-model="selectedCorporation" required>
                                 <option v-for="corporation in corporations" :value="corporation">{{ corporation.name }}</option>
                             </select>
                         </div>
-                        <div v-else>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <button type="submit" class="btn btn-success btn-sm">Select Corporation</button>
-                </form>
+                        <button type="submit" class="btn btn-success btn-sm">Select Corporation</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
             </div>
         </div>
     </div>
