@@ -230,4 +230,15 @@ class ItemsController extends Controller
             'items'    => $items
         ], 200);
     }
+
+     /**
+     * Search the specified data from the storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        return $this->item->search($request->column, $request->value);
+    }
 }
