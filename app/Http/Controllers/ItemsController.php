@@ -237,8 +237,19 @@ class ItemsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request)
+    public function search(Request $request )
     {
-        return $this->item->search($request->column, $request->value);
+        //return $this->item->search($request->column, $request->value);
+        $data = ItemResource::collection(
+            $this->item->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        );
+
+        if (! $data) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+
+        return $data;
     }
 }

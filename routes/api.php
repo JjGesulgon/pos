@@ -31,7 +31,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     ]);
 
     // Items
-    Route::get('/items/search', 'ItemsController@search');
+    Route::post('/items/search', 'ItemsController@search');
     Route::match(['put', 'patch'], 'items/{item}/restore', 'ItemsController@restore');
     Route::delete('items/{item}/force-delete', 'ItemsController@forceDestroy');
     Route::get('items/get-all-items', 'ItemsController@getAllItems');

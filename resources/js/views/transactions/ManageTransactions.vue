@@ -572,8 +572,17 @@
                 this.search(this.itemName, this);
             },
             search: _.debounce((itemName, vm) => {
-                axios.get(`/api/items/search?value=${escape(itemName)}`).then(res => {
-                    vm.items = res.data;
+                // axios.get(`/api/items/search?value=${escape(itemName)}`)
+                axios.post('/api/items/search', {
+                    page: 1, 
+                    per_page: null, 
+                    name: itemName, 
+                    amount: null, 
+                    order_by: this.order_by
+                })
+                .then(res => {
+                    console.log(res);
+                    vm.items = res.data.data;
                 });
             }, 250),
             clear() {
