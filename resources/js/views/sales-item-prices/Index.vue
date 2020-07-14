@@ -9,6 +9,9 @@
                 <div class="float-right">
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'sales-item-prices.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Sale Item Price</router-link>
                 </div>
+                <div class="float-right col-md-6">
+                    <input type="text" class="form-control form-control-sm" v-model="name_from_item" @input="onSearch" placeholder="Search">
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-sm">
@@ -138,6 +141,7 @@
     export default {
         data() {
             return {
+                name_from_item: '',
                 itemPriceLists: null,
                 meta: {
                     current_page: null,
@@ -342,7 +346,17 @@
                         per_page: this.meta.per_page
                     }
                 });
-            }
+            },
+            onSearch() {
+                this.search(this.name_from_item, this);
+            },
+            search: _.debounce((name_from_item, vm) => {
+                axios.get(`/api/sales-item-prices/name_from_item=${escape(name_from_item)}`)
+                .then(res => {
+                    console.log(res);
+                    vm.itemPriceLists = res.data.data;
+                });
+            }, 250),
         }
     }
 </script>

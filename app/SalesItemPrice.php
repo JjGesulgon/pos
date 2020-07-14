@@ -3,12 +3,13 @@
 namespace App;
 
 use App\Traits\Filtering;
+use App\Traits\FilterRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SalesItemPrice extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Sales item prices table.
