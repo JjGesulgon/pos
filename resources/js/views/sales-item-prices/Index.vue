@@ -351,7 +351,7 @@
                 this.search(this.name_from_item, this);
             },
             search: _.debounce((name_from_item, vm) => {
-                axios.get(`/api/sales-item-prices/name_from_item=${escape(name_from_item)}`)
+                axios.get(`/api/sales-item-prices?name_from_item=${escape(name_from_item)}`)
                 .then(res => {
                     console.log(res);
                     vm.itemPriceLists = res.data.data;
