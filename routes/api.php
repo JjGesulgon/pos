@@ -3,7 +3,7 @@
 // Auth
 Route::post('/auth/login', 'AuthController@apiLogin');
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['api']], function () {
     // Logout
     Route::post('/auth/logout', 'AuthController@apiLogout')->name('logout');
 

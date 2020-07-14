@@ -33,17 +33,17 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $data = ItemResource::collection(
+        $items = ItemResource::collection(
             $this->item->paginateWithFilters(request(), request()->per_page, request()->order_by)
         );
 
-        if (! $data) {
+        if (! $items) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $data;
+        return $items;
     }
 
     /**

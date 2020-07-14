@@ -33,13 +33,17 @@ class SalesItemPricesController extends Controller
      */
     public function index()
     {
-        if (! $data = SalesItemPriceResource::collection($this->salesItemPrice->paginate())) {
+        $salesItemPrices = SalesItemPriceResource::collection(
+            $this->salesItemPrice->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        );
+
+        if (! $salesItemPrices) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
-    
-        return $data;
+
+        return $salesItemPrices;
     }
     
     /**
