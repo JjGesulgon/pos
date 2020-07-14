@@ -222,4 +222,26 @@ class ContactsController extends Controller
             'contacts' => $contacts
         ], 200);
     }
+
+    /**
+     * Search the specified data from the storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request )
+    {
+        //return $this->item->search($request->column, $request->value);
+        $data = ContactResource::collection(
+            $this->contact->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        );
+
+        if (! $data) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+
+        return $data;
+    }
 }

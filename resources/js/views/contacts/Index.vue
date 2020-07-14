@@ -10,6 +10,9 @@
                 <div class="float-right">
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'contacts.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Contact</router-link>
                 </div>
+                <div class="float-right col-md-6">
+                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-sm table-striped">
@@ -103,7 +106,7 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Contacts</button>
+                    <!-- <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Contacts</button> -->
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
@@ -221,6 +224,7 @@
     export default {
         data() {
             return {
+                itemName: '',
                 componentVal: 'Contact',
                 name:'',
                 email:'',
@@ -471,25 +475,47 @@
                     }
                 });
             },
-            search() {
-                $('#searchModal').modal('hide');
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'contacts.index',
-                    query: {
-                        page: 1,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        email: this.email,
-                        mobile_number: this.mobile_number,
-                        type: this.type,
-                        company_name: this.company_name,
-                        company_address: this.company_address,
-                        credit_limit: this.credit_limit,
-                        order_by: this.order_by
-                    }
-                });
+            onSearch() {
+                this.search(this.itemName, this);
             },
+            search: _.debounce((itemName, vm) => {
+                // axios.get(`/api/items/search?value=${escape(itemName)}`)
+                axios.post('/api/contacts/search', {
+                    page: 1, 
+                    per_page: null, 
+                    name: itemName,
+                    email: null,
+                    mobile_number: null,
+                    type: null,
+                    company_name: null,
+                    company_address: null,
+                    credit_limit: null,
+                    order_by: this.order_by
+                })
+                .then(res => {
+                    console.log(res);
+                    vm.contacts = res.data.data;
+                });
+            }, 250),
+            // search() {
+            //     $('#searchModal').modal('hide');
+            //     this.showProgress = true;
+            //     this.$router.push({
+            //         name: 'contacts.index',
+            //         query: {
+            //             page: 1,
+            //             per_page: this.meta.per_page,
+            //             name: this.name,
+            //             email: this.email,
+            //             mobile_number: this.mobile_number,
+            //             type: this.type,
+            //             company_name: this.company_name,
+            //             company_address: this.company_address,
+            //             credit_limit: this.credit_limit,
+            //             order_by: this.order_by
+            //         }
+            //     });
+            // },
             clear() {
                 this.name = '',
                 this.email = '',

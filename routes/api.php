@@ -11,6 +11,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/auth/user', 'AuthController@user');
 
     // Contacts
+    Route::post('/contacts/search', 'ContactsController@search');
     Route::match(['put', 'patch'], 'contacts/{contact}/restore', 'ContactsController@restore');
     Route::delete('contacts/{contact}/force-delete', 'ContactsController@forceDestroy');
     Route::get('contacts/get-all-contacts', 'ContactsController@getAllContacts');
