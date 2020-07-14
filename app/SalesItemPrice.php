@@ -4,7 +4,6 @@ namespace App;
 
 use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
-use App\Traits\FilterRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
