@@ -2,13 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SalesItemPrice extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Sales item prices table.
@@ -77,14 +78,23 @@ class SalesItemPrice extends Model
         return $this->belongsTo(Item::class);
     }
 
+    /**
+     * The sales item price has many invoice items.
+     *
+     * @return array object
+     */
     public function invoiceItems()
     {
-        return $this->belongsToMany(InvoiceItem::class);
+        return $this->hasMany(InvoiceItem::class);
     }
 
+    /**
+     * The sales item price has many credit memorandum items.
+     *
+     * @return array object
+     */
     public function creditMemorandumItems()
     {
-        return $this->belongsToMany(CreditMemorandumItem::class);
+        return $this->hasMany(CreditMemorandumItem::class);
     }
-
 }

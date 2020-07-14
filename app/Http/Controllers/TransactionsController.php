@@ -37,17 +37,17 @@ class TransactionsController extends Controller
      */
     public function index()
     {
-        $transaction = TransactionResource::collection(
+        $transactions = TransactionResource::collection(
             $this->transaction->paginateWithFilters(request(), request()->per_page, request()->order_by)
         );
 
-        if (! $transaction) {
+        if (! $transactions) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $transaction;
+        return $transactions;
     }
 
     /**
