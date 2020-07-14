@@ -10,6 +10,9 @@
                 <div class="float-right">
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'items.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Item</router-link>
                 </div>
+                <div class="float-right col-md-6">
+                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                </div>
             </div>
 
             <div class="card-body">
@@ -100,7 +103,7 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <button type="button" class="btn btn-primary mr-2" @click.prevent="openSearchModal">Search For Items</button>
+                    <!-- <button type="button" class="btn btn-primary mr-2" @click.prevent="openSearchModal">Search For Items</button> -->
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
@@ -197,6 +200,7 @@
     export default {
         data() {
             return {
+                itemName: '',
                 items: null,
                 stock_keeping_unit: '',
                 name: '',
@@ -441,21 +445,38 @@
                     }
                 });
             },
-            search() {
-                $('#searchModal').modal('hide');
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'items.index',
-                    query: {
-                        page: 1,
-                        per_page: this.meta.per_page,
-                        stock_keeping_unit: this.stock_keeping_unit,
-                        name: this.name,
-                        description: this.description,
-                        order_by: this.order_by
-                    }
-                });
+            onSearch() {
+                this.search(this.itemName, this);
             },
+            search: _.debounce((itemName, vm) => {
+                // axios.get(`/api/items/search?value=${escape(itemName)}`)
+                axios.post('/api/items/search', {
+                    page: 1, 
+                    per_page: null, 
+                    name: itemName, 
+                    amount: null, 
+                    order_by: this.order_by
+                })
+                .then(res => {
+                    console.log(res);
+                    vm.items = res.data.data;
+                });
+            }, 250),
+            // search() {
+            //     $('#searchModal').modal('hide');
+            //     this.showProgress = true;
+            //     this.$router.push({
+            //         name: 'items.index',
+            //         query: {
+            //             page: 1,
+            //             per_page: this.meta.per_page,
+            //             stock_keeping_unit: this.stock_keeping_unit,
+            //             name: this.name,
+            //             description: this.description,
+            //             order_by: this.order_by
+            //         }
+            //     });
+            // },
             clear() {
                 this.stock_keeping_unit = '';
                 this.name               = '';
