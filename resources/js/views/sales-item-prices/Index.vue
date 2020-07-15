@@ -10,7 +10,7 @@
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'sales-item-prices.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Sale Item Price</router-link>
                 </div>
                 <div class="float-right col-md-6">
-                    <input type="text" class="form-control form-control-sm" v-model="name_from_item" @input="onSearch" placeholder="Search">
+                    <input type="text" class="form-control form-control-sm" v-model="name_from_item" @input="onSearch" placeholder="Quick Search">
                 </div>
             </div>
             <div class="card-body">
@@ -102,6 +102,7 @@
             <div class="float-right">
                 <form class="form-inline">
                     <label class="sr-only" for="Number of Items">Number of Items</label>
+                    <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Sales Item Price</button>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
@@ -357,6 +358,10 @@
                     vm.itemPriceLists = res.data.data;
                 });
             }, 250),
+
+            openSearchModal() {
+                $('#searchModal').modal('show');
+            }
         }
     }
 </script>

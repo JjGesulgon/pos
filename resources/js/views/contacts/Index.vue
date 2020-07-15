@@ -11,7 +11,7 @@
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'contacts.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Contact</router-link>
                 </div>
                 <div class="float-right col-md-6">
-                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Quick Search">
                 </div>
             </div>
             <div class="card-body">
@@ -106,7 +106,7 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <!-- <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Contacts</button> -->
+                    <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Contacts</button>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
@@ -497,25 +497,25 @@
                     vm.contacts = res.data.data;
                 });
             }, 250),
-            // search() {
-            //     $('#searchModal').modal('hide');
-            //     this.showProgress = true;
-            //     this.$router.push({
-            //         name: 'contacts.index',
-            //         query: {
-            //             page: 1,
-            //             per_page: this.meta.per_page,
-            //             name: this.name,
-            //             email: this.email,
-            //             mobile_number: this.mobile_number,
-            //             type: this.type,
-            //             company_name: this.company_name,
-            //             company_address: this.company_address,
-            //             credit_limit: this.credit_limit,
-            //             order_by: this.order_by
-            //         }
-            //     });
-            // },
+            search() {
+                $('#searchModal').modal('hide');
+                this.showProgress = true;
+                this.$router.push({
+                    name: 'contacts.index',
+                    query: {
+                        page: 1,
+                        per_page: this.meta.per_page,
+                        name: this.name,
+                        email: this.email,
+                        mobile_number: this.mobile_number,
+                        type: this.type,
+                        company_name: this.company_name,
+                        company_address: this.company_address,
+                        credit_limit: this.credit_limit,
+                        order_by: this.order_by
+                    }
+                });
+            },
             clear() {
                 this.name = '',
                 this.email = '',

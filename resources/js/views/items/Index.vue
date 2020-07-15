@@ -11,7 +11,7 @@
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'items.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Item</router-link>
                 </div>
                 <div class="float-right col-md-6">
-                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Quick Search">
                 </div>
             </div>
 
@@ -103,7 +103,7 @@
 
             <div class="float-right">
                 <form class="form-inline">
-                    <!-- <button type="button" class="btn btn-primary mr-2" @click.prevent="openSearchModal">Search For Items</button> -->
+                    <button type="button" class="btn btn-primary mr-2" @click.prevent="openSearchModal">Search For Items</button>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
@@ -462,21 +462,21 @@
                     vm.items = res.data.data;
                 });
             }, 250),
-            // search() {
-            //     $('#searchModal').modal('hide');
-            //     this.showProgress = true;
-            //     this.$router.push({
-            //         name: 'items.index',
-            //         query: {
-            //             page: 1,
-            //             per_page: this.meta.per_page,
-            //             stock_keeping_unit: this.stock_keeping_unit,
-            //             name: this.name,
-            //             description: this.description,
-            //             order_by: this.order_by
-            //         }
-            //     });
-            // },
+            search() {
+                $('#searchModal').modal('hide');
+                this.showProgress = true;
+                this.$router.push({
+                    name: 'items.index',
+                    query: {
+                        page: 1,
+                        per_page: this.meta.per_page,
+                        stock_keeping_unit: this.stock_keeping_unit,
+                        name: this.name,
+                        description: this.description,
+                        order_by: this.order_by
+                    }
+                });
+            },
             clear() {
                 this.stock_keeping_unit = '';
                 this.name               = '';
