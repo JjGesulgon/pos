@@ -34,7 +34,7 @@ class SalesItemPricesController extends Controller
     public function index()
     {
         $salesItemPrices = SalesItemPriceResource::collection(
-            $this->salesItemPrice->paginateWithFilters(request(), request()->per_page, request()->order_by)
+            $this->salesItemPrice->salesItemPriceWithFilters(request(), request()->per_page, request()->order_by)
         );
 
         if (! $salesItemPrices) {
@@ -192,7 +192,7 @@ class SalesItemPricesController extends Controller
      */
     public function getSalesItemPrices($id)
     {
-        if (! $itemPricelists = $this->salesItemPrice->getSalesItemPrices($id)) {
+        if (! $salesItemPrice = $this->salesItemPrice->getSalesItemPrices($id)) {
             return response()->json([
                 'response' => false,
                 'message'  => 'Resources does not exist.'
@@ -202,7 +202,23 @@ class SalesItemPricesController extends Controller
         return response()->json([
             'response'          => true,
             'message'           => 'Resources successfully retrieve.',
-            'sales_item_prices' => $itemPricelists
+            'sales_item_prices' => $salesItemPrice
         ], 200);
+    }
+
+    /**
+     * Display a listing of the resource (Quick Search).
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search()
+    {
+        if (! $data = SalesItemPriceResource::collection($this->salesItemPrice->paginate())) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+
+        return $data;
     }
 }

@@ -9,9 +9,6 @@
                 <div class="float-right">
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'sales-item-prices.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Sale Item Price</router-link>
                 </div>
-                <div class="float-right col-md-6">
-                    <input type="text" class="form-control form-control-sm" v-model="name_from_item" @input="onSearch" placeholder="Quick Search">
-                </div>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-sm">
@@ -103,7 +100,7 @@
                 <form class="form-inline">
                     <label class="sr-only" for="Number of Items">Number of Items</label>
                     <button type="button" class="btn btn-primary mr-2" @click.prevent.default="openSearchModal">Search Sales Item Price</button>
-                    <div class="input-group mb-2">
+                    <div class="input-group">
                         <div class="input-group-prepend">
                             <div class="input-group-text">Items per page</div>
                         </div>
@@ -116,13 +113,50 @@
                     </div>
                 </form>
             </div>
+
+            <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchArticles" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Search For Sales Items Prices</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="text" class="form-control" v-model="price" autocomplete="off" minlength="2" maxlength="255">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Item</label>
+                                <input type="text" class="form-control" v-model="item" autocomplete="off" minlength="2" maxlength="255">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Order By</label>
+                                <select class="form-control" v-model="order_by">
+                                    <option value="desc">Newest</option>
+                                    <option value="asc">Oldest</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer clearfix">
+                            <button type="button" class="btn btn-danger btn-sm" @click.prevent="clear">Clear</button>
+                            <button type="button" class="btn btn-success btn-sm" @click.prevent="search">Search</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-    const getSalesItemPrices = (page, per_page, callback) => {
-        const params = { page, per_page };
+    const getSalesItemPrices = (price, item, order_by, page, per_page, callback) => {
+        const params = { price, item, order_by, page, per_page };
 
         axios.get('/api/sales-item-prices', { params }).then(res => {
             new Promise((resolve, reject) => {
@@ -144,6 +178,9 @@
             return {
                 name_from_item: '',
                 itemPriceLists: null,
+                item: '',
+                price: '',
+                order_by: 'desc',
                 meta: {
                     current_page: null,
                     from: null,
@@ -167,18 +204,18 @@
 
         beforeRouteEnter (to, from, next) {
             if (to.query.per_page == null) {
-                getSalesItemPrices(to.query.page, 10, (err, data) => {
+                getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, 10, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             } else {
-                getSalesItemPrices(to.query.page, to.query.per_page, (err, data) => {
+                getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, to.query.per_page, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             }
         },
 
         beforeRouteUpdate (to, from, next) {
-            getSalesItemPrices(to.query.page, this.meta.per_page, (err, data) => {
+            getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, this.meta.per_page, (err, data) => {
                 this.setData(err, data);
                 next();
             });
@@ -348,17 +385,26 @@
                     }
                 });
             },
-            onSearch() {
-                this.search(this.name_from_item, this);
-            },
-            search: _.debounce((name_from_item, vm) => {
-                axios.get(`/api/sales-item-prices?name_from_item=${escape(name_from_item)}`)
-                .then(res => {
-                    console.log(res);
-                    vm.itemPriceLists = res.data.data;
-                });
-            }, 250),
 
+            search() {
+                $('#searchModal').modal('hide');
+                this.showProgress = true;
+                this.$router.push({
+                    name: 'sales-item-prices.index',
+                    query: {
+                        page: 1,
+                        per_page: this.meta.per_page,
+                        item: this.item,
+                        price: this.price,
+                        order_by: this.order_by
+                    }
+                });
+            },
+            clear() {
+                this.price               = '';
+                this.item        = '';
+                this.order_by           = 'desc';
+            },
             openSearchModal() {
                 $('#searchModal').modal('show');
             }
