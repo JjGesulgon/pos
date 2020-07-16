@@ -32,9 +32,9 @@ class SalesItemPricesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {        
         $salesItemPrices = SalesItemPriceResource::collection(
-            $this->salesItemPrice->salesItemPriceWithFilters(request(), request()->per_page, request()->order_by)
+            $this->salesItemPrice->paginateWithFilters(request(), request()->per_page, request()->order_by)
         );
 
         if (! $salesItemPrices) {
