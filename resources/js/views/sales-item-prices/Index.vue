@@ -131,7 +131,7 @@
 
                             <div class="form-group">
                                 <label>Item</label>
-                                <input type="text" class="form-control" v-model="item" autocomplete="off" minlength="2" maxlength="255">
+                                <input type="text" class="form-control" v-model="name_from_item" autocomplete="off" minlength="2" maxlength="255">
                             </div>
 
                             <div class="form-group">
@@ -155,8 +155,8 @@
 </template>
 
 <script>
-    const getSalesItemPrices = (price, item, order_by, page, per_page, callback) => {
-        const params = { price, item, order_by, page, per_page };
+    const getSalesItemPrices = (price, name_from_item, order_by, page, per_page, callback) => {
+        const params = { price, name_from_item, order_by, page, per_page };
 
         axios.get('/api/sales-item-prices', { params }).then(res => {
             new Promise((resolve, reject) => {
@@ -204,18 +204,18 @@
 
         beforeRouteEnter (to, from, next) {
             if (to.query.per_page == null) {
-                getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, 10, (err, data) => {
+                getSalesItemPrices(to.query.price, to.query.name_from_item, to.query.order_by, to.query.page, 10, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             } else {
-                getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, to.query.per_page, (err, data) => {
+                getSalesItemPrices(to.query.price, to.query.name_from_item, to.query.order_by, to.query.page, to.query.per_page, (err, data) => {
                     next(vm => vm.setData(err, data));
                 });
             }
         },
 
         beforeRouteUpdate (to, from, next) {
-            getSalesItemPrices(to.query.price, to.query.item, to.query.order_by, to.query.page, this.meta.per_page, (err, data) => {
+            getSalesItemPrices(to.query.price, to.query.name_from_item, to.query.order_by, to.query.page, this.meta.per_page, (err, data) => {
                 this.setData(err, data);
                 next();
             });
@@ -311,13 +311,13 @@
                     }
                 });
             },
-            setData(err, { data: itemPriceLists, links, meta }) {
+            setData(err, { data: salesItemPrices, links, meta }) {
                 this.pageNumbers = [];
 
                 if (err) {
                     this.error = err.toString();
                 } else {
-                    this.itemPriceLists = itemPriceLists;
+                    this.itemPriceLists = salesItemPrices;
                     this.links = links;
                     this.meta = meta;
                 }
@@ -394,16 +394,16 @@
                     query: {
                         page: 1,
                         per_page: this.meta.per_page,
-                        item: this.item,
+                        name_from_item: this.name_from_item,
                         price: this.price,
                         order_by: this.order_by
                     }
                 });
             },
             clear() {
-                this.price               = '';
-                this.item        = '';
-                this.order_by           = 'desc';
+                this.price       = '';
+                this.name_from_item        = '';
+                this.order_by    = 'desc';
             },
             openSearchModal() {
                 $('#searchModal').modal('show');
