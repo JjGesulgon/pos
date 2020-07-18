@@ -53,8 +53,8 @@ const StocksView = () => import('./views/stocks/View');
  * Transactions
  * 
  */
-const ManageTransactions  = () => import('./views/transactions/ManageTransactions');
-const TransactionHistory  = () => import('./views/transactions/TransactionHistory');
+const TransactionsCreate  = () => import('./views/transactions/Create');
+const TransactionsIndex  = () => import('./views/transactions/Index');
 
 /**
  * Users
@@ -101,8 +101,8 @@ export default new Router({
         { path: '/stocks/:id', name: 'stocks.view', component: StocksView },
 
         // Transactions
-        { path: '/transactions', name: 'transactions.index', component: ManageTransactions },
-        { path: '/transaction-history', name: 'transaction_history.index', component: TransactionHistory },
+        { path: '/transactions', name: 'transactions.index', component: TransactionsIndex },
+        { path: '/transactions/create', name: 'transactions.create', component: TransactionsCreate },
 
         // Users
         { path: '/users', name: 'users.index', component: UsersIndex },

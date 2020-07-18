@@ -45,7 +45,7 @@ trait FilterEntrust
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    public function filterEntrust(& $query, & $request)
+    public function filterEntrust(&$query, &$request)
     {
         // Check if filtering roles and permissions is needed
         self::checkRolesAndPermissions($request);
@@ -72,7 +72,7 @@ trait FilterEntrust
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    public function checkRolesAndPermissions(& $request)
+    public function checkRolesAndPermissions(&$request)
     {
         foreach ($request->all() as $key => $value) {
             if (strpos($key, 'filterByRoles') !== false && is_array($value)) {
@@ -102,7 +102,7 @@ trait FilterEntrust
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    public function filterByRoles(& $query, & $request)
+    public function filterByRoles(&$query, &$request)
     {
         $query->whereHas('roles', function ($query) use ($request) {
             $query->where(function ($query) use ($request) {
@@ -126,7 +126,7 @@ trait FilterEntrust
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    public function filterByPermissions(& $query, & $request)
+    public function filterByPermissions(&$query, &$request)
     {
         $query->whereHas('roles', function ($query) use ($request) {
             $query->whereHas('permissions', function ($query) use ($request) {
@@ -152,7 +152,7 @@ trait FilterEntrust
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    public function filterByRolesAndPermissions(& $query, & $request)
+    public function filterByRolesAndPermissions(&$query, &$request)
     {
         $query->whereHas('roles', function ($query) use ($request) {
             $query->where(function ($query) use ($request) {

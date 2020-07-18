@@ -20,7 +20,6 @@
                             <div class="row">
                                 <div class="col-md-9">
                                     List of Items
-                                    <!-- List of items - Total Items {{ this.meta.total }} -->
                                 </div>
                                 <div class="col-md-3">
                                     <div class="progress" height="30px;" v-if="showProgress">
@@ -33,7 +32,6 @@
                             <tr>
                                 <th scope="col">Name</th>
                                 <th scope="col">Price</th>
-                                <th scope="col">Stocks Available</th>
                                 <th scope="col">Options</th>
                             </tr>
                         </thead>
@@ -41,7 +39,6 @@
                             <tr v-for="item in items">
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.amount }}</td>
-                                <td>{{ item.stocks_available }}</td>
                                 <td>
                                     <div v-if="item.stocks_available != 0">
                                         <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">

@@ -74,10 +74,10 @@
                 <div class="collapse" id="transactions">
                     <ul class="nav flex-column nav-sub-menu">
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'transactions.index' }">Manage Transactions</router-link>
+                            <router-link class="nav-link" :to="{ name: 'transactions.create' }">Create New Transaction</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'transaction_history.index' }">Transaction History</router-link>
+                            <router-link class="nav-link" :to="{ name: 'transactions.index' }">View Transactions</router-link>
                         </li>
                     </ul>
                 </div>
