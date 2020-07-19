@@ -3,14 +3,12 @@
         <div v-if="ifReady">
             <div class="card">
                 <div class="card-header">
-                    <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                    /
                     <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
                     /
                     <span class="text-secondary">Select Corporation</span>
                 </div>
                 <div class="card-body">
-                    <form v-on:submit.prevent="selectCorporation">
+                    <form v-on:submit.prevent="selectCorporation()">
                         <div class="form-group">
                             <label for="name">Select Corporation</label>
                             
@@ -69,6 +67,8 @@
 
         methods: {
             selectCorporation() {
+                this.ifReady = false;
+                
                 let promise = new Promise((resolve, reject) => {
                     this.$store.commit('selectCorporation', this.selectedCorporation);
                     localStorage.setItem('selectedCorporation', JSON.stringify(this.selectedCorporation));
@@ -77,7 +77,7 @@
                 });
 
                 promise.then(() => {
-                    this.$router.push({ name: 'corporations.index' });
+                    this.$router.push({ name: 'overview' });
                 });
             }
         }

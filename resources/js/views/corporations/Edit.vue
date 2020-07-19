@@ -2,8 +2,6 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                /
                 <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
                 /
                 <span class="text-secondary">Edit Corporation</span>
@@ -67,8 +65,10 @@
                             </div>
                         </div>
 
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click.prevent.default="viewCorporation()"><i class="fas fa-chevron-left"></i>&nbsp; Back</button>
-                        <button type="button" class="btn btn-success btn-sm"><i class="fas fa-edit"></i>&nbsp; Update Corporation</button>
+                        <router-link type="button" class="btn btn-outline-secondary btn-sm" :to="{ name: 'corporations.view', params: { id: $route.params.id }}">
+                            <i class="fas fa-chevron-left"></i>&nbsp; Back
+                        </router-link>
+                        <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-edit"></i>&nbsp; Update Corporation</button>
                     </form>
                 </div>
                 <div v-else>
@@ -122,12 +122,6 @@
         },
 
         methods: {
-            viewCorporation() {
-                this.$router.push({
-                    name: 'corporations.view',
-                    params: { id: this.$route.params.id }
-                });
-            },
             updateCorporation() {
                 axios.patch('/api/corporations/' + this.$route.params.id, this.$data).then(res => {
                     if (! res.data.response) { return; }

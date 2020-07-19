@@ -24,8 +24,9 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'brand_id', 'item_type_id', 'item_classification_id','name',
-        'description', 'stock_keeping_unit', 'identifier', 'default_unit_of_measurement_id',
+        'corporation_id', 'brand_id', 'item_type_id', 'item_classification_id',
+        'name', 'description', 'stock_keeping_unit', 'identifier',
+        'default_unit_of_measurement_id', 'default_purchase_item_price_id', 'default_sales_item_price_id',
         'sales_account_id', 'cost_of_goods_sold_account_id', 'expense_account_id', 'asset_account_id',
         'purchase_discounts', 'sales_discounts'
     ];
@@ -46,15 +47,6 @@ class Item extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
-
-    /**
-     * Eager load relationships.
-     *
-     * @var array
-     */
-    protected $with = [
-        'brand', 'itemType', 'itemClassification', 'defaultUnitOfMeasurement'
-    ];
 
     /**
      * Run functions on boot.
@@ -96,36 +88,6 @@ class Item extends Model
     }
 
     /**
-     * The item belongs to an item type.
-     *
-     * @return object
-     */
-    public function itemType()
-    {
-        return $this->belongsTo(ItemType::class);
-    }
-
-    /**
-     * The item the belongs to an item classification.
-     *
-     * @return object
-     */
-    public function itemClassification()
-    {
-        return $this->belongsTo(ItemClassification::class);
-    }
-
-    /**
-     * The item belongs to a default unit of measurement.
-     *
-     * @return object
-     */
-    public function defaultUnitOfMeasurement()
-    {
-        return $this->belongsTo(UnitOfMeasurement::class, 'default_unit_of_measurement_id');
-    }
-
-    /**
      * The item belongs to a credit memorandum item.
      *
      * @return object
@@ -143,6 +105,86 @@ class Item extends Model
     public function debitMemorandumItems()
     {
         return $this->hasMany(DebitMemorandumItem::class);
+    }
+
+    /**
+     * The item belongs to a default unit of measurement.
+     *
+     * @return object
+     */
+    public function defaultUnitOfMeasurement()
+    {
+        return $this->belongsTo(UnitOfMeasurement::class, 'default_unit_of_measurement_id');
+    }
+
+    /**
+     * The item belongs to a default purchase item price.
+     *
+     * @return object
+     */
+    public function defaultPurchaseItemPrice()
+    {
+        return $this->belongsTo(PurchaseItemPrice::class, 'default_purchase_item_price_id');
+    }
+
+    /**
+     * The item belongs to a default sales item price.
+     *
+     * @return object
+     */
+    public function defaultSalesItemPrice()
+    {
+        return $this->belongsTo(SalesItemPrice::class, 'default_sales_item_price_id');
+    }
+
+    /**
+     * The item the belongs to an item classification.
+     *
+     * @return object
+     */
+    public function itemClassification()
+    {
+        return $this->belongsTo(ItemClassification::class);
+    }
+
+    /**
+     * The item belongs to an item type.
+     *
+     * @return object
+     */
+    public function itemType()
+    {
+        return $this->belongsTo(ItemType::class);
+    }
+
+    /**
+     * The item has many unit of measurements.
+     *
+     * @return array object
+     */
+    public function unitOfMeasurements()
+    {
+        return $this->hasMany(UnitOfMeasurement::class);
+    }
+
+    /**
+     * The item has many purchase item prices.
+     *
+     * @return array object
+     */
+    public function purchaseItemPrices()
+    {
+        return $this->hasMany(PurchaseItemPrice::class);
+    }
+
+    /**
+     * The item has many sales item prices.
+     *
+     * @return array object
+     */
+    public function salesItemPrices()
+    {
+        return $this->hasMany(SalesItemPrices::class);
     }
 
     /**

@@ -3,8 +3,6 @@
         <div class="card">
             <div class="card-header clearfix">
                 <div class="float-left">
-                    <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                    /
                     <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
                     /
                     <span class="text-secondary">View Corporations</span>

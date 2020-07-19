@@ -2,8 +2,6 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                /
                 <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
                 /
                 <span class="text-secondary">View Corporation</span>
@@ -92,16 +90,34 @@
                     </div>
                     <div class="modal-body">
                         Are you sure you want to delete this Corporation? <br><br>
-                        Deleting this {{componentVal}} will delete the following data <br><br>
-                        - departments <br>
-                        - sub-departments <br>
-                        - budgets <br>
-                        - journals <br>
-                        - journal entries <br>
-                        - vouchers <br>
-                        - voucher entries <br>
-                        - statistics <br>
-                        - metrics <br><br>
+                        Deleting this will delete the following data related to this corporation: <br><br>
+                        - Contacts <br>
+                        - Contact Types <br>
+                        - Departments <br>
+                        - Sub-Departments <br>
+                        - Branches <br>
+                        - Warehouses <br>
+                        - Budgets <br>
+                        - Journals <br>
+                        - Journal Entries <br>
+                        - Vouchers <br>
+                        - Voucher Entries <br>
+                        - Purchase Orders <br>
+                        - Purchase Orders Items <br>
+                        - Receive Orders <br>
+                        - Receive Order Items <br>
+                        - Bills <br>
+                        - Bill Items <br>
+                        - Bill Payments <br>
+                        - Debit Memorandums <br>
+                        - Debit Memorandum Items <br>
+                        - Quotations <br>
+                        - Quotation Items <br>
+                        - Invoices <br>
+                        - Credit Memorandums <br>
+                        - Credit Memorandum Items <br>
+                        - Statistics <br>
+                        - Metrics <br><br>
 
                         that are all related to this Corporation.
                     </div>

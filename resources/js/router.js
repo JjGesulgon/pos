@@ -78,11 +78,11 @@ export default new Router({
         { path: '/contacts/:id/edit', name: 'contacts.edit', component: ContactsEdit },
 
         // Corporations
-        { path: 'corporations/select', name: 'corporations.select', component: CorporationsSelect },
-        { path: 'corporations', name: 'corporations.index', component: CorporationsIndex },
-        { path: 'corporations/create', name: 'corporations.create', component: CorporationsCreate },
-        { path: 'corporations/:id', name: 'corporations.view', component: CorporationsView },
-        { path: 'corporations/:id/edit', name: 'corporations.edit', component: CorporationsEdit },
+        { path: '/corporations', name: 'corporations.index', component: CorporationsIndex },
+        { path: '/corporations/create', name: 'corporations.create', component: CorporationsCreate },
+        { path: '/corporations/:id', name: 'corporations.view', component: CorporationsView },
+        { path: '/corporations/:id/edit', name: 'corporations.edit', component: CorporationsEdit },
+        { path: '/corporations/select', name: 'corporations.select', component: CorporationsSelect },
 
         // Items
         { path: '/items', name: 'items.index', component: ItemsIndex },

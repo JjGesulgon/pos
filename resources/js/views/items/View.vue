@@ -39,12 +39,22 @@
                                 <input type="text" class="form-control" v-model="item.item_classification.name" readonly>
                             </div>
                             <div class="col-md-3 form-group">
-                                <label>Unit of Measurement</label>
+                                <label>Default Unit of Measurement</label>
                                 <input type="text" class="form-control" v-model="item.default_unit_of_measurement.name" readonly>
                             </div>
                             <div class="col-md-3 form-group">
-                                <label>Unit of Measurement</label>
+                                <label>Brand</label>
                                 <input type="text" class="form-control" v-model="item.brand.name" readonly>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Default Purchase Item Price</label>
+                                <input v-if="item.default_purchase_item_price" type="text" class="form-control" v-model="item.default_purchase_item_price.price" readonly>
+                                <input v-else type="text" class="form-control" value="" readonly>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Default Sales Item Price</label>
+                                <input v-if="item.default_sales_item_price" type="text" class="form-control" v-model="item.default_sales_item_price.price" readonly>
+                                <input v-else type="text" class="form-control" value="" readonly>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>Purchase Discounts</label>

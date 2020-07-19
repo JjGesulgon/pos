@@ -31,6 +31,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
+                                <th scope="col">Unit of Measurement</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Options</th>
                             </tr>
@@ -38,6 +39,7 @@
                         <tbody v-if="items">
                             <tr v-for="item in items">
                                 <td>{{ item.name }}</td>
+                                <td>{{ item.default_unit_of_measurement.name }}</td>
                                 <td>{{ item.amount }}</td>
                                 <td>
                                     <div v-if="item.stocks_available != 0">
@@ -494,6 +496,7 @@
                 if (err) {
                     this.error = err.toString();
                 } else {
+                    console.log(items);
                     this.items = items;
                     this.links = links;
                     this.meta = meta;

@@ -2,8 +2,6 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'settings.index' }">Settings</router-link>
-                /
                 <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
                 /
                 <span class="text-secondary">Create New Corporation</span>
@@ -69,7 +67,7 @@
 
                         <br>
 
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @click.prevent="viewCorporations()"><i class="fas fa-chevron-left"></i>&nbsp; Back</button>
+                        <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'corporations.index' }"><i class="fas fa-chevron-left"></i> &nbsp;Back</router-link>
                         <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-plus"></i>&nbsp; Create New Corporation</button>
                     </form>
                 </div>
@@ -102,9 +100,6 @@
         },
 
         methods: {
-            viewCorporations() {
-                this.$router.push({ name: 'corporations.index' });
-            },
             createNewCorporation() {
                 this.ifReady = false;
                 

@@ -58,8 +58,7 @@ class CreateItemsTable extends Migration
             $table->bigInteger('default_unit_of_measurement_id')->unsigned();
             $table->foreign('default_unit_of_measurement_id')
                 ->references('id')
-                ->on('unit_of_measurements')
-                ->onDelete('cascade');
+                ->on('unit_of_measurements');
             $table->string('name');
             $table->text('description');
             $table->string('stock_keeping_unit');
