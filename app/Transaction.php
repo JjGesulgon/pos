@@ -23,7 +23,12 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'number', 'total_amount'
+        'corporation_id', 'user_id',
+        'transactionable_from_id', 'transactionable_from_type', 'contact_id',
+        'number', 'reference_number', 'total_amount',
+        'is_discountable', 'discount_type', 'discount_percent', 'discount_amount',
+        'is_taxable', 'is_tax_inclusive', 'tax_type', 'tax_percent', 'tax_amount',
+        'grand_total_amount'
     ];
 
     /**

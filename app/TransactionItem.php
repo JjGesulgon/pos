@@ -23,7 +23,9 @@ class TransactionItem extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'transaction_id', 'item_id'
+        'corporation_id', 'user_id'
+        'transaction_id', 'item_id', 'unit_of_measurement_id',
+        'quantity', 'sales_item_price_id'
     ];
 
     /**
