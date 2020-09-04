@@ -1,6 +1,8 @@
 <?php
 
-// Auth
+use Illuminate\Support\Facades\Route;
+
+// Login
 Route::post('/auth/login', 'AuthController@apiLogin');
 
 Route::group(['middleware' => ['api']], function () {
@@ -11,74 +13,70 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('/auth/user', 'AuthController@user');
 
     // Contacts
-    Route::post('/contacts/search', 'ContactsController@search');
-    Route::match(['put', 'patch'], 'contacts/{contact}/restore', 'ContactsController@restore');
-    Route::delete('contacts/{contact}/force-delete', 'ContactsController@forceDestroy');
-    Route::get('contacts/get-all-contacts', 'ContactsController@getAllContacts');
-    Route::resource('contacts', 'ContactsController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/contacts/{contact}/restore', 'ContactsController@restore');
+    Route::delete('/contacts/{contact}/force-delete', 'ContactsController@forceDestroy');
+    Route::get('/contacts/search', 'ContactsController@search');
+    Route::apiResource('contacts', 'ContactsController');
+
+    // Contact Types
+    Route::match(['put', 'patch'], '/cotactss-type/{contactType}/restore', 'ContactTypesController@restore');
+    Route::delete('/contact-types/{contactType}/force-delete', 'ContactTypesController@forceDestroy');
+    Route::get('/contact-types/get-all-contact-types', 'ContactTypesController@getAllContactTypes');
+    Route::apiResource('contact-types', 'ContactTypesController');
 
     // Corporations
-    Route::match(['put', 'patch'], 'corporations/{corporation}/restore', 'CorporationsController@restore');
-    Route::delete('corporations/{corporation}/force-delete', 'CorporationsController@forceDestroy');
-    Route::get('corporations/get-all-corporations', 'CorporationsController@getAllCorporations');
-    Route::resource('corporations', 'CorporationsController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/corporations/{corporation}/restore', 'CorporationsController@restore');
+    Route::delete('/corporations/{corporation}/force-delete', 'CorporationsController@forceDestroy');
+    Route::get('/corporations/get-all-corporations', 'CorporationsController@getAllCorporations');
+    Route::apiResource('corporations', 'CorporationsController');
 
     // Items
-    Route::post('/items/search', 'ItemsController@search');
-    Route::match(['put', 'patch'], 'items/{item}/restore', 'ItemsController@restore');
-    Route::delete('items/{item}/force-delete', 'ItemsController@forceDestroy');
-    Route::get('items/get-all-items', 'ItemsController@getAllItems');
-    Route::resource('items', 'ItemsController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/items/{item}/restore', 'ItemsController@restore');
+    Route::delete('/items/{item}/force-delete', 'ItemsController@forceDestroy');
+    Route::get('/items/search-for-purchase', 'ItemsController@searchForPurchase');
+    Route::get('/items/search-for-sales', 'ItemsController@searchForSales');
+    Route::get('/items/search', 'ItemsController@search');
+    Route::apiResource('items', 'ItemsController');
+
+    // Item Types
+    Route::match(['put', 'patch'], '/item-types/{itemType}/restore', 'ItemTypesController@restore');
+    Route::delete('/item-types/{itemType}/force-delete', 'ItemTypesController@forceDestroy');
+    Route::get('/item-types/search', 'ItemTypesController@search');
+    Route::apiResource('item-types', 'ItemTypesController');
+
+    // Measuring Mass
+    Route::match(['put', 'patch'], '/measuring-mass/{measuringMass}/restore', 'MeasuringMassController@restore');
+    Route::delete('/measuring-mass/{measuringMass}/force-delete', 'MeasuringMassController@forceDestroy');
+    Route::get('/measuring-mass/search', 'MeasuringMassController@search');
+    Route::apiResource('measuring-mass', 'MeasuringMassController');
+
+    // Mode Of Payments
+    Route::match(['put', 'patch'], '/mode-of-payments/{mode-of-payment}/restore', 'ModeOfPaymentsController@restore');
+    Route::delete('/mode-of-payments/{mode-of-payment}/force-delete', 'ModeOfPaymentsController@forceDestroy');
+    Route::get('/mode-of-payments/get-all-mode-of-payments', 'ModeOfPaymentsController@getAllModeOfPayments');
+    Route::apiResource('mode-of-payments', 'ModeOfPaymentsController');
 
     // Sales Item Prices
-    Route::match(['put', 'patch'], 'sales-item-prices/{salesItemPrice}/restore', 'SalesItemPricesController@restore');
-    Route::delete('sales-item-prices/{salesItemPrice}/force-delete', 'SalesItemPricesController@forceDestroy');
-    Route::get('sales-item-prices/get-sales-item-prices/{salesItemPrice}', 'SalesItemPricesController@getSalesItemPrices');
-    Route::resource('sales-item-prices', 'SalesItemPricesController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/sales-item-prices/{salesItemPrice}/restore', 'SalesItemPricesController@restore');
+    Route::delete('/sales-item-prices/{salesItemPrice}/force-delete', 'SalesItemPricesController@forceDestroy');
+    Route::get('/sales-item-prices/get-sales-item-prices/{salesItemPrice}', 'SalesItemPricesController@getSalesItemPrices');
+    Route::apiResource('sales-item-prices', 'SalesItemPricesController');
 
     // Stocks
-    Route::match(['put', 'patch'], 'stocks/{stock}/restore', 'StocksController@restore');
-    Route::delete('stocks/{stock}/force-delete', 'StocksController@forceDestroy');
-    Route::get('stocks/get-all-stocks', 'StocksController@getAllStock');
-    Route::get('stocks/get-all-stocks/{locationType}', 'StocksController@getAllStockPerLocationType');
-    Route::get('stocks/{item}/get-all-stocks-of-item', 'StocksController@getAllStocksOfItem');
-    Route::resource('stocks', 'StocksController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/stocks/{stock}/restore', 'StocksController@restore');
+    Route::delete('/stocks/{stock}/force-delete', 'StocksController@forceDestroy');
+    Route::get('/stocks/get-all-stocks', 'StocksController@getAllStock');
+    Route::get('/stocks/get-all-stocks/{locationType}', 'StocksController@getAllStockPerLocationType');
+    Route::get('/stocks/{item}/get-all-stocks-of-item', 'StocksController@getAllStocksOfItem');
+    Route::apiResource('stocks', 'StocksController');
 
     // Transactions
-    Route::match(['put', 'patch'], 'transactions/{transaction}/restore', 'TransactionsController@restore');
-    Route::delete('transactions/{transaction}/force-delete', 'TransactionsController@forceDestroy');
-    Route::resource('transactions', 'TransactionsController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/transactions/{transaction}/restore', 'TransactionsController@restore');
+    Route::delete('/transactions/{transaction}/force-delete', 'TransactionsController@forceDestroy');
+    Route::apiResource('transactions', 'TransactionsController');
 
     // Users
-    Route::match(['put', 'patch'], 'users/{user}/restore', 'UsersController@restore');
-    Route::delete('users/{user}/force-delete', 'UsersController@forceDestroy');
-    Route::resource('users', 'UsersController', [
-        'only' => [
-            'index', 'store', 'show', 'update', 'destroy'
-        ]
-    ]);
+    Route::match(['put', 'patch'], '/users/{user}/restore', 'UsersController@restore');
+    Route::delete('/users/{user}/force-delete', 'UsersController@forceDestroy');
+    Route::apiResource('users', 'UsersController');
 });

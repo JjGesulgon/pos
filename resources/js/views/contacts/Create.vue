@@ -153,7 +153,7 @@
 
         mounted() {
             let promiseGetContactTypes = new Promise((resolve, reject) => {
-                axios.get('/api/contacts-type/get-all-contacts-type').then(res => {
+                axios.get('/api/contact-types/get-all-contact-types').then(res => {
                     this.contactTypes = res.data.contact_types;
                     resolve();
                 }).catch(err => {

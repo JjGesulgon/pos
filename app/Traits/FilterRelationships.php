@@ -56,19 +56,32 @@ trait FilterRelationships
 
         if (isset(self::$data)) {
             foreach (self::$data as $column => $value) {
-                $query->whereHas(self::convertToRelationship($column), function ($query) use ($column, $value) {
-                    $query->where(function ($query) use ($column, $value) {
-                        if (! is_array($value)) {
-                            $query->orWhere($this->convertToColumn($column), 'LIKE', '%' . $value . '%');
-                        }
-
-                        if (is_array($value)) {
-                            foreach ($value as $arrayValue) {
-                                $query->orWhere($this->convertToColumn($column), 'LIKE', '%' . $arrayValue . '%');
+                if ($this->checkIfQueryShouldBeStrict($request->is_strict)) {
+                    $query->whereHas(self::convertToRelationship($column), function ($query) use ($request, $column, $value) {
+                        $query->where(function ($query) use ($column, $value) {
+                            if (! is_array($value)) {
+                                $query->where($this->convertToColumn($column), 'LIKE', '%' . $value . '%');
+                            } else {
+                                foreach ($value as $arrayValue) {
+                                    $query->orWhere($this->convertToColumn($column), 'LIKE', '%' . $arrayValue . '%');
+                                }
                             }
-                        }
+                        });
                     });
-                });
+                } else {
+                    dump('Filtering Relationship Not Strict');
+                    $query->orWhereHas(self::convertToRelationship($column), function ($query) use ($request, $column, $value) {
+                        $query->where(function ($query) use ($column, $value) {
+                            if (! is_array($value)) {
+                                $query->where($this->convertToColumn($column), 'LIKE', '%' . $value . '%');
+                            } else {
+                                foreach ($value as $arrayValue) {
+                                    $query->orWhere($this->convertToColumn($column), 'LIKE', '%' . $arrayValue . '%');
+                                }
+                            }
+                        });
+                    });
+                }
             }
         }
     }
@@ -81,14 +94,24 @@ trait FilterRelationships
      */
     public function convertToRelationship($column)
     {
-        $relationship = strtolower(preg_replace('/.+?(?:FromModel)|.+?(?:Model)|.+?(?:_from_)|.+?(?:_from_model_)/', '', $column));
+        $relationship = strtolower(
+            preg_replace(
+                '/.+?(?:FromModel)|.+?(?:Model)|.+?(?:_from_)|.+?(?:_from_model_)/',
+                '',
+                $column
+            )
+        );
 
         if (strrpos($relationship, '_') !== false) {
-            preg_match('/\_./', $relationship, $matches);
+            preg_match_all('/\_./', $relationship, $matches);
 
-            $match = str_replace('_', '', strtoupper($matches[0]));
+            $matches = $matches[0];
 
-            $relationship = preg_replace('/\_./', $match, $relationship);
+            foreach ($matches as $match) {
+                $replacement = str_replace('_', '', strtoupper($match));
+
+                $relationship = str_replace($match, $replacement, $relationship);
+            }
         }
 
         return $relationship;

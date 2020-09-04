@@ -39,6 +39,16 @@ Vue.component('vue-select', VueSelect);
 // Layouts
 Vue.component('navbar', require('./views/layouts/Navbar.vue'));
 Vue.component('sidebar', require('./views/layouts/Sidebar.vue'));
+Vue.component('search', require('./components/Search.vue'));
+Vue.component('pagination', require('./components/Pagination.vue'));
+Vue.component('search-modal', require('./components/SearchModal.vue'));
+Vue.component('data-table', require('./components/DataTable.vue'));
+Vue.component('data-table-row-action', require('./components/DataTableRowAction.vue'));
+Vue.component('form-title', require('./components/FormTitle.vue'));
+Vue.component('form-create', require('./components/FormCreate.vue'));
+Vue.component('form-view', require('./components/FormView.vue'));
+Vue.component('form-edit', require('./components/FormEdit.vue'));
+Vue.component('breadcrumbs', require('./components/Breadcrumbs.vue'));
 
 const app = new Vue({
     el: '#app',

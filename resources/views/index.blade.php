@@ -18,7 +18,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- Icons -->
-    <script src="https://kit.fontawesome.com/3c3b50fc94.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/3c3b50fc94.js" crossorigin="anonymous" SameSite="None" Secure></script>
 </head>
 <body>
     <div id="app">

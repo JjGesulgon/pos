@@ -14,16 +14,16 @@ class ContactsController extends Controller
      *
      * @var App\Repositories\ContactRepository
      */
-    protected $contact;
+    protected $contactRepostory;
 
     /**
      * Create new instance of contact controller.
      *
-     * @param ContactRepository contact Contact repository
+     * @param ContactRepository $contactRepostory Contact repository
      */
-    public function __construct(ContactRepository $contact)
+    public function __construct(ContactRepository $contactRepostory)
     {
-        $this->contact = $contact;
+        $this->contactRepository = $contactRepostory;
     }
 
     /**
@@ -34,7 +34,11 @@ class ContactsController extends Controller
     public function index()
     {
         $contacts = ContactResource::collection(
-            $this->contact->paginateWithFilters(request(), request()->per_page, request()->order_by)
+            $this->contactRepository->paginateWithFilters(
+                request(),
+                request()->per_page,
+                request()->order_by
+            )
         );
 
         if (! $contacts) {
@@ -56,30 +60,27 @@ class ContactsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'contact_type_id' => 'required|integer',
-            'company'         => 'required|string|max:255',
-            'company_address' => 'required|string|max:255',
             'name'            => 'required|string|max:255',
             'email'           => 'required|string|email|max:255|unique:contacts',
-            'mobile_number'   => 'required|string',
-            'credit_limit'    => 'numeric|nullable',
-            'account_id'      => 'integer|nullable'
+            'mobile_number'   => 'string',
+            'credit_limit'    => 'numeric'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'message'  => 'Validation failed.',
-                'errors'   => $validator->errors()
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors()
             ], 400);
         }
 
-        if (! $this->contact->store($request)) {
+        if (! $this->contactRepository->store($request)) {
             return response()->json([
-                'message'  => 'Failed to store resource.'
+                'message' => 'Failed to store resource.'
             ], 500);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully stored.'
+            'message' => 'Resource successfully stored.'
         ], 200);
     }
 
@@ -91,15 +92,15 @@ class ContactsController extends Controller
      */
     public function show($id)
     {
-        if (! $contact = $this->contact->findOrFail($id)) {
+        if (! $contact = $this->contactRepository->findOrFail($id)) {
             return response()->json([
-                'message'  => 'Resource does not exist.'
+                'message' => 'Resource does not exist.'
             ], 400);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully retrieve.',
-            'contact'  => $contact
+            'message' => 'Resource successfully retrieve.',
+            'contact' => $contact
         ], 200);
     }
 
@@ -113,30 +114,28 @@ class ContactsController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'contact_type_id'   =>  'required|integer',
-            'company'           =>  'required|string|max:255',
-            'company_address'   =>  'required|string|max:255',
-            'person'            =>  'required|string|max:255',
-            'mobile_number'     =>  'required|integer',
-            'credit_limit'      =>  'numeric|nullable',
-            'account_id'        =>  'integer|nullable'
+            'contact_type_id' => 'required|integer',
+            'name'            => 'required|string|max:255',
+            'email'           => 'required|string|email|max:255',
+            'mobile_number'   => 'string',
+            'credit_limit'    => 'numeric'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'message'  => 'Validation failed.',
-                'errors'   => $validator->errors()
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors()
             ], 400);
         }
 
-        if (! $this->contact->update($request, $id)) {
+        if (! $this->contactRepository->update($request, $id)) {
             return response()->json([
-                'message'  => 'Failed to update resource.'
+                'message' => 'Failed to update resource.'
             ], 500);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully updated.'
+            'message' => 'Resource successfully updated.'
         ], 200);
     }
 
@@ -148,14 +147,14 @@ class ContactsController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->contact->findOrFail($id)->delete()) {
+        if (! $this->contactRepository->findOrFail($id)->delete()) {
             return response()->json([
-                'message'  => 'Failed to delete resource.'
+                'message' => 'Failed to delete resource.'
             ], 400);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully deleted.'
+            'message' => 'Resource successfully deleted.'
         ], 200);
     }
 
@@ -167,14 +166,14 @@ class ContactsController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->contact->restore($id)) {
+        if (! $this->contactRepository->restore($id)) {
             return response()->json([
-                'message'  => 'Failed to restore resource.'
+                'message' => 'Failed to restore resource.'
             ], 400);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully restored.'
+            'message' => 'Resource successfully restored.'
         ], 200);
     }
 
@@ -186,40 +185,14 @@ class ContactsController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->contact->forceDestroy($id)) {
+        if (! $this->contactRepository->forceDestroy($id)) {
             return response()->json([
-                'message'  => 'Failed to permanently delete resource.'
+                'message' => 'Failed to permanently delete resource.'
             ], 400);
         }
 
         return response()->json([
-            'message'  => 'Resource successfully deleted permanently.'
-        ], 200);
-    }
-
-    /**
-     * Retrieve all resources.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getAllContacts()
-    {
-        if (cache()->has('contacts')) {
-            return response()->json([
-                'message'  => 'Resources successfully retrieve.',
-                'contacts' => cache('contacts', 5)
-            ], 200);
-        }
-
-        if (! $contacts = $this->contact->all()) {
-            return response()->json([
-                'message'  => 'Resources does not exist.'
-            ], 400);
-        }
-
-        return response()->json([
-            'message'  => 'Resources successfully retrieve.',
-            'contacts' => $contacts
+            'message' => 'Resource successfully deleted permanently.'
         ], 200);
     }
 
@@ -229,19 +202,16 @@ class ContactsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request )
+    public function search(Request $request)
     {
-        //return $this->item->search($request->column, $request->value);
-        $data = ContactResource::collection(
-            $this->contact->paginateWithFilters(request(), request()->per_page, request()->order_by)
-        );
+        $contacts = $this->contactRepository->search($request);
 
-        if (! $data) {
+        if (! $contacts) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $data;
+        return $contacts;
     }
 }

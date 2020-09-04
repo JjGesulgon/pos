@@ -2,13 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Brand extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
     
     /**
      * Brands table.
@@ -23,7 +24,9 @@ class Brand extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'purchase_discounts', 'sales_discounts'
+        'corporation_id', 'user_id',
+        'name', 'display_name', 'description',
+        'purchase_discounts', 'sales_discounts'
     ];
 
     /**
@@ -33,15 +36,8 @@ class Brand extends Model
      */
     protected $casts = [
         'purchase_discounts' => 'array',
-        'sales_discounts' => 'array'
+        'sales_discounts'    => 'array'
     ];
-    
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [];
     
     /**
      * The attributes that should be mutated to dates.
@@ -62,7 +58,25 @@ class Brand extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
+    }
+
+    /**
+     * The brand belongs to a corporation.
+     *
+     * @return object
+     */
+    public function corporation()
+    {
+        return $this->belongsTo(Corporation::class);
     }
 
     /**
@@ -73,5 +87,15 @@ class Brand extends Model
     public function items()
     {
         $this->hasMany(Item::class);
+    }
+
+    /**
+     * The brand belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

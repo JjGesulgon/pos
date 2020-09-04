@@ -2,14 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-// use Spatie\Activitylog\Traits\LogsActivity;
 
 class ItemType extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Item Types table.
@@ -24,17 +24,9 @@ class ItemType extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'name', 'display_name', 'description'
+        'corporation_id', 'user_id',
+        'item_classification_id', 'name', 'display_name', 'description'
     ];
-
-    // /**
-    //  * The Log attributes that are mass assignable.
-    //  *
-    //  * @var array
-    //  */
-    // protected static $logAttributes = [
-    //     'corporation_id', 'name', 'display_name', 'description'
-    // ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -54,6 +46,14 @@ class ItemType extends Model
         static::creating(function ($model) {
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
+            }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
             }
         });
     }
@@ -79,12 +79,22 @@ class ItemType extends Model
     }
 
     /**
-     * The item has many item classification.
+     * The item type belongs to an item classification.
      *
-     * @return array object
+     * @return object
      */
     public function itemClassification()
     {
-        return $this->hasMany(ItemClassification::class);
+        return $this->belongsTo(ItemClassification::class);
+    }
+
+    /**
+     * The item type belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

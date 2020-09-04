@@ -23,7 +23,7 @@ class Corporation extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'street', 'city',
+        'user_id', 'name', 'description', 'street', 'city',
         'state', 'zip_code', 'country', 'fax'
     ];
 
@@ -33,6 +33,25 @@ class Corporation extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * Run functions on boot.
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
+        });
+    }
 
     /**
      * The corporation has many accounts.
@@ -193,6 +212,17 @@ class Corporation extends Model
     {
         return $this->hasMany(UnitOfMeasurement::class);
     }
+
+    /**
+     * The corporation belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
 
     /**
      * The corporation has many warehouses.

@@ -8,12 +8,26 @@
                     <span class="text-secondary">Create New Sales Item Price</span>
                 </div>
                 <div class="card-body">
-                    <form v-on:submit.prevent="createNewSalesItemPriceList()">
+                    <form v-on:submit.prevent="createNewSalesItemPrice()">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="item">Item</label>
-                                    <vue-select id="item" class="form-control" v-model="item" @input="selectItem()" label="name" :options="items"></vue-select>
+                                    <label>Search Item <small class="text-danger">* Required</small></label>
+                                    <vue-select class="form-control" label="name" :filterable="false" v-model="item" @input="selectItem" :options="items" @search="onSearch">
+                                        <template slot="no-options">
+                                            Search Item
+                                        </template>
+                                        <template slot="option" slot-scope="item">
+                                            <div class="d-center">
+                                                {{ item.name }}
+                                            </div>
+                                        </template>
+                                        <template slot="selected-option" slot-scope="item">
+                                            <div class="selected d-center">
+                                                {{ item.name }}
+                                            </div>
+                                        </template>
+                                    </vue-select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -63,7 +77,7 @@
 
         mounted() {
             let promise = new Promise((resolve, reject) => {
-                axios.get('/api/items/get-all-items').then(res => {
+                axios.get('/api/items').then(res => {
                     this.items = res.data.items;
                     resolve();
                 }).catch(err => {
@@ -78,10 +92,25 @@
         },
 
         methods: {
+            onSearch(value, loading) {
+                loading(true);
+                this.search(loading, value, this);
+            },
+            search: _.debounce((loading, value, vm) => {
+                axios.get('/api/items/search', {
+                    params: {
+                        column: 'name',
+                        value: value
+                    }
+                }).then(res => {
+                    vm.items = res.data.data;
+                    loading(false);
+                });
+            }, 350),
             selectItem() {
                 this.item_id = this.item.id;
             },
-            createNewSalesItemPriceList() {
+            createNewSalesItemPrice() {
                 this.ifReady = false;
 
                 let formData = {

@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="card-header">
-            <router-link class="text-primary" :to="{ name: 'item-types.index' }">Items</router-link>
+            <router-link class="text-primary" :to="{ name: 'items.index' }">Items</router-link>
             /
             <span class="text-secondary">Create New Item</span>
         </div>
@@ -37,22 +37,22 @@
                     <div class="row">
                         <div class="col-md-3 form-group">
                             <label>Item Type</label>
-                            <vue-select v-model="itemType" @input="selectItemType()" label="name" :options="itemTypes"></vue-select>
+                            <vue-select class="form-control" v-model="itemType" @input="selectItemType()" label="name" :options="itemTypes"></vue-select>
                         </div>
 
                         <div class="col-md-3 form-group">
                             <label>Item Classification</label>
-                            <vue-select v-model="itemClassification" @input="selectItemClassification()" label="name" :options="itemClassifications"></vue-select>
+                            <vue-select class="form-control" v-model="itemClassification" @input="selectItemClassification()" label="name" :options="itemClassifications"></vue-select>
                         </div>
 
                         <div class="col-md-3 form-group">
                             <label>Unit of Measurement</label>
-                            <vue-select v-model="unitOfMeasurement" @input="selectUnitOfMeasurement()" label="name" :options="unitOfMeasurements"></vue-select>
+                            <vue-select class="form-control" v-model="unitOfMeasurement" @input="selectUnitOfMeasurement()" label="name" :options="unitOfMeasurements"></vue-select>
                         </div>
 
                         <div class="col-md-3 form-group">
                             <label>Brand</label>
-                            <vue-select v-model="brand" @input="selectBrand()" label="name" :options="brands"></vue-select>
+                            <vue-select class="form-control" v-model="brand" @input="selectBrand()" label="name" :options="brands"></vue-select>
                         </div>
 
                         <div class="col-md-6 form-group" v-if="brand != null">

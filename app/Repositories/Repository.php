@@ -24,7 +24,7 @@ abstract class Repository
     /**
      * Get all resources in the storage.
      *
-     * @return array json object
+     * @return array object
      */
     public function all()
     {
@@ -34,7 +34,7 @@ abstract class Repository
     /**
      * Get all resources in the storage using specified id.
      *
-     * @return array json object
+     * @return array object
      */
     public function allUsingSpecifiedId($id)
     {
@@ -45,7 +45,7 @@ abstract class Repository
      * Get all resources with filters in the storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return array json object
+     * @return array object
      */
     public function allWithFilters($request = null)
     {
@@ -56,7 +56,7 @@ abstract class Repository
      * Create pagination for the resources.
      *
      * @param  integer $length
-     * @return array json object
+     * @return array object
      */
     public function paginate($length = 10)
     {
@@ -70,11 +70,11 @@ abstract class Repository
      * @param  string                    $orderBy
      * @param  integer                   $length
      * @param  boolean                   $removePage
-     * @return array json object
+     * @return array object
      */
     public function paginateWithFilters(
         $request = null,
-        $length = 10,
+        $length = 15,
         $orderBy = 'desc',
         $removePage = true
     ) {
@@ -97,7 +97,7 @@ abstract class Repository
      * @param  integer                   $length
      * @param  boolean                   $removePage
      * @param  string                    $orderBy
-     * @return array json object
+     * @return array object
      */
     public function paginateWithFiltersAndWithTrashed(
         $request = null,
@@ -121,7 +121,7 @@ abstract class Repository
      * @param  integer                   $length
      * @param  boolean                   $removePage
      * @param  string                    $orderBy
-     * @return array json object
+     * @return array object
      */
     public function paginateWithFiltersAndUsers(
         $request = null,
@@ -145,7 +145,7 @@ abstract class Repository
      * @param  integer                   $length
      * @param  boolean                   $removePage
      * @param  string                    $orderBy
-     * @return array json object
+     * @return array object
      */
     public function paginateWithFiltersAndWithTrashedAndWithUsers(
         $request = null,
@@ -213,7 +213,7 @@ abstract class Repository
      * Get resources but limit it to a specified amount.
      *
      * @param  int $limit
-     * @return array json object
+     * @return array object
      */
     public function limit($limit)
     {
@@ -260,20 +260,22 @@ abstract class Repository
     /**
      * Search the specified data from the storage.
      *
-     * @param  string|null $column
-     * @param  string|null $value
+     * @param  \Illuminate\Http\Request  $request
      * @return boolean
      */
-    public function search($column = null, $value = null)
+    public function search($request = null)
     {
-        if ($column == null) {
-            return $this->model->where('name', 'LIKE', '%' . $value .'%')
-                                ->orderBy('created_at', 'desc')
-                                ->limit(10)
-                                ->get();
+        if (count($request->all()) == 0) {
+            return;
+        }
+        
+        $limit = 15;
+
+        if (isset($request->limit)) {
+            $limit = $request->limit;
         }
 
-        return $this->model->where($column, 'LIKE', '%' . $value .'%')->get();
+        return $this->model->filter($request)->limit($limit)->get();
     }
 
     /**
@@ -301,7 +303,7 @@ abstract class Repository
     /**
      * Retrieve archived resources for the model.
      *
-     * @return array json object
+     * @return array object
      */
     public function archives()
     {
@@ -315,7 +317,7 @@ abstract class Repository
      * @param  integer                   $length
      * @param  boolean                   $removePage
      * @param  string                    $orderBy
-     * @return array json object
+     * @return array object
      */
     public function paginateWithPublishedFilters(
         $request = null,

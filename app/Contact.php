@@ -24,9 +24,11 @@ class Contact extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'contact_type_id', 'business_type', 'company',
-        'company_address', 'name', 'email', 'mobile_number', 'city', 'province',
-        'address', 'bank_name', 'bank_account_number', 'tin_number',
+        'corporation_id', 'user_id', 'contact_type_id',
+        'business_type', 'company', 'company_address',
+        'name', 'email', 'phone_number', 'telephone_number',
+        'city', 'province', 'address',
+        'bank_name', 'bank_account_number', 'tin_number',
         'mode_of_payment_id', 'credit_limit', 'payment_term'
     ];
 
@@ -49,26 +51,15 @@ class Contact extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
-    }
-
-    /**
-     * Eager load relationships.
-     *
-     * @var array
-     */
-    protected $with = [
-        'contactType', 'modeOfPayment'
-    ];
-
-    /**
-     * The contact belongs to a corporation.
-     *
-     * @return object
-     */
-    public function corporation()
-    {
-        return $this->belongsTo(Corporation::class);
     }
 
     /**
@@ -82,13 +73,13 @@ class Contact extends Model
     }
 
     /**
-     * The contact belongs to a mode of payment
+     * The contact belongs to a corporation.
      *
      * @return object
      */
-    public function modeOfPayment()
+    public function corporation()
     {
-        return $this->belongsTo(ModeOfPayment::class);
+        return $this->belongsTo(Corporation::class);
     }
 
     /**
@@ -109,5 +100,25 @@ class Contact extends Model
     public function debitMemorandums()
     {
         return $this->hasMany(DebitMemorandum::class);
+    }
+
+    /**
+     * The contact belongs to a mode of payment
+     *
+     * @return object
+     */
+    public function modeOfPayment()
+    {
+        return $this->belongsTo(ModeOfPayment::class);
+    }
+
+    /**
+     * The contact belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

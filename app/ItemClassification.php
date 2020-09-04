@@ -24,7 +24,8 @@ class ItemClassification extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'item_type_id', 'name', 'display_name', 'description'
+        'corporation_id', 'user_id',
+        'name', 'display_name', 'description'
     ];
 
     /**
@@ -46,6 +47,14 @@ class ItemClassification extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
     }
 
@@ -60,12 +69,22 @@ class ItemClassification extends Model
     }
 
     /**
-     * The item classification belongs to an item type.
+     * The item classification has many item types.
      *
-     * @return object
+     * @return array object
      */
     public function itemType()
     {
-        return $this->belongsTo(ItemType::class);
+        return $this->hasMany(ItemType::class);
+    }
+
+    /**
+     * The item classification belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

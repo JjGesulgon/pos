@@ -5,7 +5,6 @@ namespace App;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-// use Spatie\Activitylog\Traits\LogsActivity;
 
 class ContactType extends Model
 {
@@ -24,17 +23,9 @@ class ContactType extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'name', 'display_name', 'description'
+        'corporation_id', 'user_id',
+        'name', 'display_name', 'description'
     ];
-
-    // /**
-    //  * The Log attributes that are mass assignable.
-    //  *
-    //  * @var array
-    //  */
-    // protected static $logAttributes = [
-    //     'corporation_id', 'name', 'display_name', 'description'
-    // ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -54,6 +45,14 @@ class ContactType extends Model
         static::creating(function ($model) {
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
+            }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
             }
         });
     }
@@ -76,5 +75,15 @@ class ContactType extends Model
     public function contacts()
     {
         return $this->hasMany(Contact::class);
+    }
+
+    /**
+     * The contact type belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

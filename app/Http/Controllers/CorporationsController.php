@@ -33,17 +33,17 @@ class CorporationsController extends Controller
      */
     public function index()
     {
-        $corporations = CorporationResource::collection(
+        $data = CorporationResource::collection(
             $this->corporation->paginateWithFilters(request(), request()->per_page, request()->order_by)
         );
 
-        if (! $corporations) {
+        if (! $data) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $corporations;
+        return $data;
     }
 
     /**

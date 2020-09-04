@@ -79,7 +79,11 @@ trait Filtering
                         strpos($key, 'from_model_') == false) &&
                         ! is_array($value)
                     ) {
-                        $query->orWhere($column, 'Like', '%' . $value . '%');
+                        if (self::checkIfQueryShouldBeStrict($request->is_strict)) {
+                            $query->where($column, 'Like', '%' . $value . '%');
+                        } else {
+                            $query->orWhere($column, 'Like', '%' . $value . '%');
+                        }
                     }
 
                     if ((strpos($key, 'FromModel') == false &&
@@ -88,13 +92,23 @@ trait Filtering
                         strpos($key, 'from_model_') == false) &&
                         is_array($value)
                     ) {
-                        $query->orWhere(function ($query) use ($key, $value) {
-                            foreach ($value as $arrayValue) {
-                                if ($arrayValue !== null) {
-                                    $query->orWhere($column, 'Like', '%' . $arrayValue . '%');
+                        if (self::checkIfQueryShouldBeStrict($request->is_strict)) {
+                            $query->where(function ($query) use ($key, $value) {
+                                foreach ($value as $arrayValue) {
+                                    if ($arrayValue !== null) {
+                                        $query->orWhere($column, 'Like', '%' . $arrayValue . '%');
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            $query->orWhere(function ($query) use ($key, $value) {
+                                foreach ($value as $arrayValue) {
+                                    if ($arrayValue !== null) {
+                                        $query->orWhere($column, 'Like', '%' . $arrayValue . '%');
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -124,6 +138,17 @@ trait Filtering
     }
 
     /**
+     * Check if query should be strict.
+     *
+     * @param  boolean $isStrict
+     * @return boolean
+     */
+    public function checkIfQueryShouldBeStrict($isStrict = false)
+    {
+        return ($isStrict == "true") ? true : false;
+    }
+
+    /**
      * Convert key string to column name.
      *
      * @param  string $key
@@ -139,8 +164,8 @@ trait Filtering
             $column = str_replace($matchPair[0], '_' . lcfirst($matchPair[0]), $column);
         }
 
-        if (strpos($column, '_') !== false && ! preg_match('/\_./', $column)) {
-            return preg_replace('/\_/', '', $column, 1);
+        if (strpos($column, '_') !== false && preg_match('/\_./', $column)) {
+            return preg_replace('/\_$/', '', $column, 1);
         } else {
             return $column;
         }

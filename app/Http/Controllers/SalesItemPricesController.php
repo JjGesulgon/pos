@@ -17,13 +17,13 @@ class SalesItemPricesController extends Controller
     protected $salesItemPrice;
     
     /**
-     * Create new instance of salesItemPrice controller.
+     * Create new instance of sales item price controller.
      *
-     * @param SalesItemPriceRepository salesItemPrice SalesItemPrice repository
+     * @param SalesItemPriceRepository $salesItemPrice
      */
     public function __construct(SalesItemPriceRepository $salesItemPrice)
     {
-        $this->salesItemPrice = $salesItemPrice;
+        $this->salesItemPriceRepository = $salesItemPrice;
     }
     
     /**
@@ -32,9 +32,13 @@ class SalesItemPricesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {        
+    {
         $salesItemPrices = SalesItemPriceResource::collection(
-            $this->salesItemPrice->paginateWithFilters(request(), request()->per_page, request()->order_by)
+            $this->salesItemPriceRepository->paginateWithFilters(
+                request(),
+                request()->per_page,
+                request()->order_by
+            )
         );
 
         if (! $salesItemPrices) {
@@ -42,7 +46,7 @@ class SalesItemPricesController extends Controller
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
-
+    
         return $salesItemPrices;
     }
     
@@ -65,7 +69,7 @@ class SalesItemPricesController extends Controller
             ], 400);
         }
     
-        if (! $this->salesItemPrice->store($request)) {
+        if (! $this->salesItemPriceRepository->store($request)) {
             return response()->json([
                 'message' => 'Failed to store resource'
             ], 500);
@@ -84,14 +88,14 @@ class SalesItemPricesController extends Controller
      */
     public function show($id)
     {
-        if (! $salesItemPrice = $this->salesItemPrice->findOrFail($id)) {
+        if (! $salesItemPrice = $this->salesItemPriceRepository->findOrFail($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);
         }
     
         return response()->json([
-            'message' => 'Resource successfully retrieve',
+            'message'          => 'Resource successfully retrieve',
             'sales_item_price' => $salesItemPrice
         ], 200);
     }
@@ -116,7 +120,7 @@ class SalesItemPricesController extends Controller
             ], 400);
         }
     
-        if (! $this->salesItemPrice->update($request, $id)) {
+        if (! $this->salesItemPriceRepository->update($request, $id)) {
             return response()->json([
                 'message' => 'Failed to update resource'
             ], 500);
@@ -135,7 +139,7 @@ class SalesItemPricesController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->salesItemPrice->findOrFail($id)->delete()) {
+        if (! $this->salesItemPriceRepository->findOrFail($id)->delete()) {
             return response()->json([
                 'message' => 'Failed to delete resource'
             ], 400);
@@ -154,7 +158,7 @@ class SalesItemPricesController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->salesItemPrice->restore($id)) {
+        if (! $this->salesItemPriceRepository->restore($id)) {
             return response()->json([
                 'message' => 'Failed to restore resource'
             ], 400);
@@ -173,7 +177,7 @@ class SalesItemPricesController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->salesItemPrice->forceDestroy($id)) {
+        if (! $this->salesItemPriceRepository->forceDestroy($id)) {
             return response()->json([
                 'message' => 'Failed to permanently delete resource'
             ], 400);
@@ -185,40 +189,21 @@ class SalesItemPricesController extends Controller
     }
 
     /**
-     * Retrieve all sales item prices using specified id.
+     * Search the specified data from the storage.
      *
-     * @param  int $id id
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function getSalesItemPrices($id)
+    public function search(Request $request)
     {
-        if (! $salesItemPrice = $this->salesItemPrice->getSalesItemPrices($id)) {
-            return response()->json([
-                'response' => false,
-                'message'  => 'Resources does not exist.'
-            ], 400);
-        }
+        $salesItemPrice = $this->salesItemPriceRepository->search($request);
 
-        return response()->json([
-            'response'          => true,
-            'message'           => 'Resources successfully retrieve.',
-            'sales_item_prices' => $salesItemPrice
-        ], 200);
-    }
-
-    /**
-     * Display a listing of the resource (Quick Search).
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search()
-    {
-        if (! $data = SalesItemPriceResource::collection($this->salesItemPrice->paginate())) {
+        if (! $salesItemPrice) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $data;
+        return $salesItemPrice;
     }
 }

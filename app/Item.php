@@ -24,10 +24,12 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'brand_id', 'item_type_id', 'item_classification_id',
-        'name', 'description', 'stock_keeping_unit', 'identifier',
-        'default_unit_of_measurement_id', 'default_purchase_item_price_id', 'default_sales_item_price_id',
+        'corporation_id', 'user_id',
         'sales_account_id', 'cost_of_goods_sold_account_id', 'expense_account_id', 'asset_account_id',
+        'item_classification_id', 'item_type_id', 'brand_id',
+        'name', 'stock_keeping_unit', 'universal_product_code',
+        'identifier', 'description',
+        'default_purchase_item_price_id', 'default_sales_item_price_id',
         'purchase_discounts', 'sales_discounts'
     ];
 
@@ -38,7 +40,7 @@ class Item extends Model
      */
     protected $casts = [
         'purchase_discounts' => 'array',
-        'sales_discounts' => 'array'
+        'sales_discounts'    => 'array'
     ];
 
     /**
@@ -63,6 +65,14 @@ class Item extends Model
                 $model->cost_of_goods_sold_account_id = 9;
                 $model->sales_account_id              = 6;
                 $model->expense_account_id            = 8;
+            }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
             }
         });
     }
@@ -90,7 +100,7 @@ class Item extends Model
     /**
      * The item belongs to a credit memorandum item.
      *
-     * @return object
+     * @return array object
      */
     public function creditMemorandumItems()
     {
@@ -100,7 +110,7 @@ class Item extends Model
     /**
      * The item belongs to a debit memorandum item.
      *
-     * @return object
+     * @return array object
      */
     public function debitMemorandumItems()
     {
@@ -138,6 +148,16 @@ class Item extends Model
     }
 
     /**
+     * The item has many invoice items.
+     *
+     * @return array object
+     */
+    public function invoiceItems()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
+    /**
      * The item the belongs to an item classification.
      *
      * @return object
@@ -155,6 +175,16 @@ class Item extends Model
     public function itemType()
     {
         return $this->belongsTo(ItemType::class);
+    }
+
+    /**
+     * The item has many stocks.
+     *
+     * @return array object
+     */
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
     }
 
     /**
@@ -178,6 +208,16 @@ class Item extends Model
     }
 
     /**
+     * The item has many quotation items.
+     *
+     * @return array object
+     */
+    public function quotationItems()
+    {
+        return $this->hasMany(QuotationItem::class);
+    }
+
+    /**
      * The item has many sales item prices.
      *
      * @return array object
@@ -195,5 +235,15 @@ class Item extends Model
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    /**
+     * The item belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

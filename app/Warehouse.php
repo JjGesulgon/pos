@@ -2,13 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Warehouse extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Warehouses table.
@@ -23,7 +24,7 @@ class Warehouse extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'name', 'address', 'city',
+        'corporation_id', 'user_id', 'name', 'address', 'city',
         'zip_code', 'country', 'telephone_number', 'status'
     ];
 
@@ -46,17 +47,15 @@ class Warehouse extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
-        });
-    }
 
-    /**
-     * The warehouse has many bills.
-     *
-     * @return array object
-     */
-    public function bills()
-    {
-        return $this->morphMany(Bill::class, 'billable');
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
+        });
     }
 
     /**
@@ -80,23 +79,13 @@ class Warehouse extends Model
     }
 
     /**
-     * The warehouse has many invoices.
+     * The branch has many invoices.
      *
      * @return array object
      */
     public function invoices()
     {
         return $this->morphMany(Invoice::class, 'invoiceable');
-    }
-
-    /**
-     * The warehouse has many purchase order from.
-     *
-     * @return array object
-     */
-    public function purchaseOrderableFrom()
-    {
-        return $this->morphMany(PurchaseOrder::class, 'purchase_orderable_from');
     }
 
     /**
@@ -107,6 +96,26 @@ class Warehouse extends Model
     public function stocks()
     {
         return $this->morphMany(Stock::class, 'stockable');
+    }
+
+    /**
+     * The warehouse has many stock receive from.
+     *
+     * @return array object
+     */
+    public function stockReceiveFrom()
+    {
+        return $this->morphMany(StockReceive::class, 'stock_receivable_from');
+    }
+
+    /**
+     * The warehouse has many stock receive to.
+     *
+     * @return array object
+     */
+    public function stockReceiveTo()
+    {
+        return $this->morphMany(StockReceive::class, 'stock_receivable_to');
     }
 
     /**
@@ -127,5 +136,35 @@ class Warehouse extends Model
     public function stockRequestTo()
     {
         return $this->morphMany(StockRequest::class, 'stock_requestable_to');
+    }
+
+    /**
+     * The warehouse has many stock transfer from.
+     *
+     * @return array object
+     */
+    public function stockTransferableFrom()
+    {
+        return $this->morphMany(StockTransferable::class, 'stock_transferable_from');
+    }
+
+    /**
+     * The warehouse has many stock transfer to.
+     *
+     * @return array object
+     */
+    public function stockTransferableTo()
+    {
+        return $this->morphMany(StockTransferable::class, 'stock_transferable_to');
+    }
+
+    /**
+     * The warehouse belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

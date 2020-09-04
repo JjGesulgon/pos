@@ -2,14 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-// use Spatie\Activitylog\Traits\LogsActivity;
 
 class Stock extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Stocks table.
@@ -24,19 +24,10 @@ class Stock extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'stockable_id', 'stockable_type',
-        'item_id', 'quantity', 'unit_of_measurement_id'
+        'corporation_id', 'user_id',
+        'stockable_id', 'stockable_type',
+        'item_id', 'measuring_mass_id', 'unit_of_measurement_id', 'quantity'
     ];
-
-    /**
-     * The Log attributes that are mass assignable.
-     *
-     * @var array
-     */
-    // protected static $logAttributes = [
-    //     'corporation_id', 'stockable_id', 'stockable_type',
-    //     'item_id', 'quantity', 'unit_of_measurement_id'
-    // ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -50,7 +41,9 @@ class Stock extends Model
      *
      * @var array
      */
-    protected $with = ['stockable', 'item', 'unitOfMeasurement'];
+    protected $with = [
+        'stockable', 'item', 'unitOfMeasurement'
+    ];
 
     /**
      * Run functions on boot.
@@ -64,11 +57,19 @@ class Stock extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
     }
 
     /**
-     * The stock belongs to a corporation
+     * The stock belongs to a corporation.
      *
      * @return object
      */
@@ -78,15 +79,7 @@ class Stock extends Model
     }
 
     /**
-     * Get all of the owning stockable models.
-     */
-    public function stockable()
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * The classification belongs to an item type.
+     * The stock belongs to an item type.
      *
      * @return object
      */
@@ -96,12 +89,42 @@ class Stock extends Model
     }
 
     /**
-     * The purchase order item belongs to a unit of measurement.
+     * The stock belongs to either a warehouse or a branch.
+     *
+     * @return object
+     */
+    public function stockable()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * The receive order item belongs to a measuring mass.
+     *
+     * @return objct
+     */
+    public function measuringMass()
+    {
+        return $this->belongsTo(MeasuringMass::class);
+    }
+
+    /**
+     * The stock belongs to a unit of measurement.
      *
      * @return object
      */
     public function unitOfMeasurement()
     {
         return $this->belongsTo(UnitOfMeasurement::class);
+    }
+
+    /**
+     * The stock belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

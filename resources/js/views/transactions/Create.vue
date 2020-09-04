@@ -1,16 +1,26 @@
 <template>
     <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <router-link class="text-primary" :to="{ name: 'transactions.index' }">Transactions</router-link>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Create New Transaction
+                    </li>
+                </ol>
+            </nav>
+        </div>
         <div class="col-md-6">
             <div class="card" >
-                <div class="card-header clearfix">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <router-link class="text-primary" :to="{ name: 'transactions.index' }">Transactions</router-link>
-                            /
-                            <span class="text-secondary">Item List</span>
+                <div class="card-header">
+                    <div class="row clearfix">
+                        <div class="float-left col-md-6">
+                            Items
                         </div>
                         <div class="float-right col-md-6">
-                            <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search">
+                            <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Search Item">
                         </div>
                     </div>
                 </div>
@@ -30,22 +40,22 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Unit of Measurement</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Options</th>
+                                <th width="35%" scope="col">Name</th>
+                                <th width="25%" scope="col">Unit of Measurement</th>
+                                <th width="15%" scope="col">Price</th>
+                                <th width="25%" scope="col">Options</th>
                             </tr>
                         </thead>
                         <tbody v-if="items">
                             <tr v-for="item in items">
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.default_unit_of_measurement.name }}</td>
-                                <td>{{ item.amount }}</td>
+                                <td>{{ item.default_sales_item_price.price }}</td>
                                 <td>
                                     <div v-if="item.stocks_available != 0">
                                         <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
                                             <i class="fas fa-cart-arrow-down"></i>&nbsp;
-                                            <strong>Add to cart</strong>
+                                            <strong>Add to Cart</strong>
                                         </label>
                                     </div>
                                     <div v-else>
@@ -125,41 +135,6 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="search" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="search">Search Item</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" class="form-control" v-model="name" autocomplete="off" maxlength="255">
-                            </div>
-                            <div class="form-group">
-                                <label>Amount</label>
-                                <input type="text" class="form-control" v-model="amount" autocomplete="off" maxlength="255">
-                            </div>
-                            <div class="form-group">
-                                <label>Order By</label>
-                                <select class="form-control" v-model="order_by">
-                                    <option value="desc">Newest</option>
-                                    <option value="asc">Oldest</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="clear">Clear</button>
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="search">Search</button>
-                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="modal fade" id="checkout-modal" tabindex="-1" role="dialog" aria-labelledby="checkout" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
@@ -214,32 +189,13 @@
                             </div>
                         </div>
                         <div class="modal-footer" v-else>
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="createTransaction()">Proceed</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="deleteItemTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">You're about to delete this Item</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete this Item?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="deleteItem()">Confirm Delete</button>
-                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="createNewTransaction()">Proceed</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header"><i class="fas fa-shopping-cart"></i>&nbsp; Cart</div>
@@ -280,15 +236,15 @@
                             <tr class="no-border" v-if="priceSummation() != 0">
                                 <td scope="row" colspan="4"></td>
                                 <td scope="row">
-                                        <strong>Total Bill:</strong>
-                                        {{ priceSummation() }}
+                                    <strong>Total Bill:</strong>
+                                    {{ priceSummation() }}
                                 </td>
                             </tr>
                             <tr class="no-border" v-if="priceSummation() != 0">
                                 <td scope="row" colspan="4"></td>
                                 <td scope="row">
-                                        <strong>Cash:</strong>
-                                        <input type="number" id="cash" name="cash" v-model="cash">
+                                    <strong>Cash:</strong>
+                                    <input type="number" id="cash" name="cash" v-model="cash">
                                 </td>
                             </tr>
                             <tr class="no-border" v-if="priceSummation() != 0">
@@ -316,10 +272,10 @@
 </template>
 
 <script>
-    const getItems = (page, per_page, name, amount, order_by, callback) => {
-        const params = { page, per_page, name, amount, order_by };
+    const searchItemsForSales = (page, per_page, name, order_by, callback) => {
+        const params = { page, per_page, name, order_by };
 
-        axios.get('/api/items', { params }).then(res => {
+        axios.get('/api/items/search-for-sales', { params }).then(res => {
             callback(null, res.data);
         }).catch(error => {
             if (error.response.status == 401) {
@@ -337,10 +293,7 @@
             return {
                 items: null,
                 name: '',
-                amount: '',
                 itemName: '',
-                itemID: '',
-                totalBill: '',
                 cart: [],
                 cash: 0,
                 order_by: 'desc',
@@ -368,21 +321,39 @@
 
         beforeRouteEnter (to, from, next) {
             if (to.query.per_page == null) {
-                getItems(to.query.page, 10, to.query.name, to.query.amount, to.query.order_by, (err, data) => {
-                    next(vm => vm.setData(err, data));
-                });
+                searchItemsForSales(
+                    to.query.page,
+                    10,
+                    to.query.name,
+                    to.query.order_by,
+                    (err, data) => {
+                        next(vm => vm.setData(err, data));
+                    }
+                    );
             } else {
-                getItems(to.query.page, to.query.per_page, to.query.name, to.query.amount, to.query.order_by, (err, data) => {
-                    next(vm => vm.setData(err, data));
-                });
+                searchItemsForSales(
+                    to.query.page,
+                    to.query.per_page,
+                    to.query.name,
+                    to.query.order_by,
+                    (err, data) => {
+                        next(vm => vm.setData(err, data));
+                    }
+                    );
             }
         },
 
         beforeRouteUpdate (to, from, next) {
-            getItems(to.query.page, this.meta.per_page, this.name, this.amount, this.order_by, (err, data) => {
-                this.setData(err, data);
-                next();
-            });
+            searchItemsForSales(
+                to.query.page,
+                this.meta.per_page,
+                this.name,
+                this.order_by,
+                (err, data) => {
+                    this.setData(err, data);
+                    next();
+                }
+                );
         },
 
         computed: {
@@ -421,7 +392,17 @@
                 }
 
                 return;
-            }
+            },
+            // subTotalAmount() {
+            //     return this.purchase_order_items.map((purchase_order_item) => {
+            //         return (purchase_order_item.quantity * purchase_order_item.unit_price);
+            //     });
+            // },
+            // totalAmount() {
+            //     return this.purchase_order_items.reduce((total, purchase_order_item) => {
+            //         return total + (purchase_order_item.quantity * purchase_order_item.unit_price);
+            //     }, 0);
+            // }
         },
 
         methods: {
@@ -433,7 +414,6 @@
                         page: 1,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -446,7 +426,6 @@
                         page,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -459,7 +438,6 @@
                         page: this.meta.last_page,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -472,7 +450,6 @@
                         page: this.nextPage,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -485,7 +462,6 @@
                         page: this.prevPage,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -496,7 +472,6 @@
                 if (err) {
                     this.error = err.toString();
                 } else {
-                    console.log(items);
                     this.items = items;
                     this.links = links;
                     this.meta = meta;
@@ -563,7 +538,6 @@
                         page: 1,
                         per_page: this.meta.per_page,
                         name: this.name,
-                        amount: this.amount,
                         order_by: this.order_by
                     }
                 });
@@ -572,16 +546,11 @@
                 this.search(this.itemName, this);
             },
             search: _.debounce((itemName, vm) => {
-                // axios.get(`/api/items/search?value=${escape(itemName)}`)
-                axios.post('/api/items/search', {
-                    page: 1, 
-                    per_page: null, 
-                    name: itemName, 
-                    amount: null, 
-                    order_by: this.order_by
-                })
-                .then(res => {
-                    console.log(res);
+                axios.get('/api/items/search-for-sales', {
+                    params: {
+                        name: itemName
+                    }
+                }).then(res => {
                     vm.items = res.data.data;
                 });
             }, 250),
@@ -616,18 +585,6 @@
                     alert('Item already exists in cart');
                 }
             },
-            deleteItem() {
-                $('#delete-modal').modal('hide');
-                axios.delete('/api/items/' + this.itemID).then(res => {
-                    Broadcast.$emit('ToastMessage', {
-                        message: 'Item Deleted Successfully'
-                    });
-
-                    this.$router.go()
-                }).catch(err => {
-                    console.log(err);
-                });
-            },
             priceSummation() {
                 var total = 0;
                 this.cart.forEach(el => {
@@ -635,15 +592,14 @@
              })
                 return total.toFixed(2);
             },
-            removeFromCart(item){
+            removeFromCart(item) {
                 this.cart.splice(this.cart.findIndex(x => x.id = item.id), 1);
             },
-            createTransaction(){
-
+            createNewTransaction() {
                 if((parseInt(this.cash).toFixed(2) - this.priceSummation()) < 0){
-                    alert('Insufficient Funds')
+                    alert('Insufficient Funds');
                 } else{
-                    this.ifReady = true; 
+                    this.ifReady = true;
                     var transaction = {
                         total_amount: this.priceSummation(),
                         cart: this.cart
@@ -672,6 +628,7 @@
 
                         this.cart = [];
                         this.cash = '';
+                        
                         this.$router.go();
                     }).catch(err => {
                         this.ifReady = true;
@@ -683,14 +640,14 @@
     }
 </script>
 
-<style scoped>
+<style>
 .clickableText:hover {
     text-decoration: underline;
     cursor: pointer
 }
 
-.table>tbody>tr.no-border>td,
-.table>tbody>tr.no-border>th {
+.table > tbody > tr.no-border > td,
+.table > tbody > tr.no-border > th {
   border-top: none;
 }
-</style>>
+</style>

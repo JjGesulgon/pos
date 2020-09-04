@@ -14,16 +14,16 @@ class UsersController extends Controller
      *
      * @var App\Repositories\UserRepository
      */
-    protected $user;
+    protected $userRepository;
 
     /**
      * Create new instance of user controller.
      *
-     * @param UserRepository user User repository
+     * @param UserRepository $userRepository
      */
-    public function __construct(UserRepository $user)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->user = $user;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -33,17 +33,21 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $data = UserResource::collection(
-            $this->user->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        $users = UserResource::collection(
+            $this->userRepository->paginateWithFilters(
+                request(),
+                request()->per_page,
+                request()->order_by
+            )
         );
 
-        if (! $data) {
+        if (! $users) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $data;
+        return $users;
     }
 
     /**
@@ -67,7 +71,7 @@ class UsersController extends Controller
             ], 400);
         }
 
-        if (! $this->user->store($request)) {
+        if (! $this->userRepository->store($request)) {
             return response()->json([
                 'message' => 'Failed to store resource'
             ], 500);
@@ -86,7 +90,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        if (! $user = $this->user->findOrFail($id)) {
+        if (! $user = $this->userRepository->findOrFail($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);
@@ -108,7 +112,7 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -118,7 +122,7 @@ class UsersController extends Controller
             ], 400);
         }
 
-        if (! $this->user->update($request, $id)) {
+        if (! $this->userRepository->update($request, $id)) {
             return response()->json([
                 'message' => 'Failed to update resource'
             ], 500);
@@ -137,7 +141,7 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->user->findOrFail($id)->delete()) {
+        if (! $this->userRepository->findOrFail($id)->delete()) {
             return response()->json([
                 'message' => 'Failed to delete resource'
             ], 400);
@@ -156,7 +160,7 @@ class UsersController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->user->restore($id)) {
+        if (! $this->userRepository->restore($id)) {
             return response()->json([
                 'message' => 'Failed to restore resource'
             ], 400);
@@ -175,7 +179,7 @@ class UsersController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->user->forceDestroy($id)) {
+        if (! $this->userRepository->forceDestroy($id)) {
             return response()->json([
                 'message' => 'Failed to permanently delete resource'
             ], 400);

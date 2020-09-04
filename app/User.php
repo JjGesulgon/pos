@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'mobile_number'
+        'corporation_id', 'name', 'email', 'password', 'mobile_number'
     ];
 
     /**
@@ -45,4 +45,29 @@ class User extends Authenticatable
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * Run functions on boot.
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (request()->headers->get('CORPORATION-ID')) {
+                $model->corporation_id = request()->headers->get('CORPORATION-ID');
+            }
+        });
+    }
+
+    /**
+     * The user belongs to a corporation.
+     *
+     * @return object
+     */
+    public function corporation()
+    {
+        return $this->belongsTo(Corporation::class);
+    }
 }

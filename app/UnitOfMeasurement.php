@@ -2,14 +2,14 @@
 
 namespace App;
 
+use App\Traits\FilterRelationships;
 use App\Traits\Filtering;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-// use Spatie\Activitylog\Traits\LogsActivity;
 
 class UnitOfMeasurement extends Model
 {
-    use SoftDeletes, Filtering;
+    use SoftDeletes, Filtering, FilterRelationships;
 
     /**
      * Unit Of Measurement table.
@@ -24,17 +24,9 @@ class UnitOfMeasurement extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'name', 'abbreviation'
+        'corporation_id', 'user_id',
+        'name', 'abbreviation'
     ];
-
-    /**
-     * The Log attributes that are mass assignable.
-     *
-     * @var array
-     */
-    // protected static $logAttributes = [
-    //     'corporation_id', 'name', 'abbreviation'
-    // ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -55,7 +47,45 @@ class UnitOfMeasurement extends Model
             if (request()->headers->get('CORPORATION-ID')) {
                 $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
+
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
+    }
+
+    /**
+     * The unif of measurement has many bill items.
+     *
+     * @return array object
+     */
+    public function billItems()
+    {
+        return $this->hasMany(BillItem::class);
+    }
+
+    /**
+     * The unit of measurement belongs to a corporation.
+     *
+     * @return object
+     */
+    public function corporation()
+    {
+        return $this->belongsTo(Corporation::class);
+    }
+
+    /**
+     * The unit of measurement has many credit memorandum items.
+     *
+     * @return array object
+     */
+    public function creditMemorandumItems()
+    {
+        return $this->hasMany(CreditMemorandumItems::class);
     }
 
     /**
@@ -66,6 +96,26 @@ class UnitOfMeasurement extends Model
     public function conversions()
     {
         return $this->hasMany(Conversion::class);
+    }
+
+    /**
+     * The unit of measurement has many debit memorandum items.
+     *
+     * @return array object
+     */
+    public function debitMemorandumItems()
+    {
+        return $this->hasMany(DebitMemorandumItems::class);
+    }
+
+    /**
+     * The unit of measurement has many purchase item prices.
+     *
+     * @return array object
+     */
+    public function purchaseItemPrices()
+    {
+        return $this->hasMany(PurchaseItemPrices::class);
     }
 
     /**
@@ -86,5 +136,25 @@ class UnitOfMeasurement extends Model
     public function receiveOrderItems()
     {
         return $this->hasMany(ReceiveOrderItem::class);
+    }
+
+    /**
+     * The unit of measurement has many sales item prices.
+     *
+     * @return array object
+     */
+    public function salesItemPrices()
+    {
+        return $this->hasMany(SalesItemPrices::class);
+    }
+
+    /**
+     * The unit of measurement belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

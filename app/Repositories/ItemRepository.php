@@ -26,38 +26,6 @@ class ItemRepository extends Repository
     }
 
     /**
-     * Create pagination with filters for the resources.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string                    $orderBy
-     * @param  integer                   $length
-     * @param  boolean                   $removePage
-     * @return array json object
-     */
-    public function paginateWithFilters(
-        $request = null,
-        $length = 10,
-        $orderBy = 'desc',
-        $removePage = true
-    ) {
-        if ($orderBy == null) {
-            $orderBy = 'desc';
-        }
-
-        return $this->item->filter($request)
-            ->with(
-                'brand',
-                'itemType',
-                'itemClassification',
-                'defaultUnitOfMeasurement',
-            )->orderBy('created_at', $orderBy)
-            ->paginate($length)
-            ->withPath(
-                $this->model->createPaginationUrl($request, $removePage)
-            );
-    }
-
-    /**
      * Find the resource using the specified id or else fail.
      *
      * @param  int $id
@@ -69,9 +37,103 @@ class ItemRepository extends Repository
             'brand',
             'itemType',
             'itemClassification',
-            'defaultUnitOfMeasurement',
             'defaultPurchaseItemPrice',
             'defaultSalesItemPrice'
         )->findOrFail($id);
+    }
+
+    /**
+     * Create pagination with filters for the resources.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string                    $orderBy
+     * @param  integer                   $length
+     * @param  boolean                   $removePage
+     * @return array json object
+     */
+    public function paginateWithFilters(
+        $request = null,
+        $length = 15,
+        $orderBy = 'desc',
+        $removePage = true
+    ) {
+        if ($orderBy == null) {
+            $orderBy = 'desc';
+        }
+
+        return $this->item->filter($request)
+        ->with(
+            'brand',
+            'itemType',
+            'itemClassification'
+        )->orderBy('created_at', $orderBy)
+        ->paginate($length)
+        ->withPath(
+            $this->item->createPaginationUrl($request, $removePage)
+        );
+    }
+
+    /**
+     * Search items for purchase.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string                    $orderBy
+     * @param  integer                   $length
+     * @param  boolean                   $removePage
+     * @return array json object
+     */
+    public function searchForPurchase(
+        $request = null,
+        $length = 15,
+        $orderBy = 'desc',
+        $removePage = true
+    ) {
+        if ($orderBy == null) {
+            $orderBy = 'desc';
+        }
+
+        return $this->item->filter($request)
+        ->with(
+            'brand',
+            'defaultPurchaseItemPrice'
+        )->orderBy('created_at', $orderBy)
+        ->limit($length)
+        ->get();
+    }
+
+    /**
+     * Search items for sales.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string                    $orderBy
+     * @param  integer                   $length
+     * @param  boolean                   $removePage
+     * @return array json object
+     */
+    public function searchForSales(
+        $request = null,
+        $length = 15,
+        $orderBy = 'desc',
+        $removePage = true
+    ) {
+        if ($orderBy == null) {
+            $orderBy = 'desc';
+        }
+
+        if (count($request->all()) == 0) {
+            return;
+        }
+
+        return $this->item->filter($request)
+        ->with(
+            'brand',
+            'defaultSalesItemPrice'
+        )
+        ->whereHas('stocks', function ($query) {
+            $query->where('quantity', '>=', 1);
+        })
+        ->orderBy('created_at', $orderBy)
+        ->limit($length)
+        ->get();
     }
 }
