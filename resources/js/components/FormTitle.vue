@@ -10,7 +10,7 @@
                     &nbsp;
                     <strong>Create New {{ singularName }}</strong>
                 </router-link>
-                <button v-if="showRightSide == true" type="button" class="btn btn-sm btn-primary mr-1" @click.prevent="$parent.$refs.searchModal.openSearchModal()">
+                <button v-if="showRightSide == true && $parent.data" type="button" class="btn btn-sm btn-primary mr-1" @click.prevent="$parent.$refs.searchModal.openSearchModal()">
                     <i class="fas fa-search"></i>
                     &nbsp;
                     <strong>Search {{ pluralName }}</strong>
