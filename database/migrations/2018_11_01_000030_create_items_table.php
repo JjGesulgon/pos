@@ -27,12 +27,6 @@ class CreateItemsTable extends Migration
                 ->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->bigInteger('brand_id')->unsigned()->nullable();
-            $table->foreign('brand_id')
-                ->references('id')
-                ->on('brands')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
             $table->bigInteger('asset_account_id')->unsigned()->nullable();
             $table->foreign('asset_account_id')
                 ->references('id')
@@ -62,6 +56,12 @@ class CreateItemsTable extends Migration
             $table->string('universal_product_code')->unique();
             $table->string('identifier')->nullable();
             $table->text('description')->nullable();
+            $table->bigInteger('brand_id')->unsigned()->nullable();
+            $table->foreign('brand_id')
+                ->references('id')
+                ->on('brands')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->bigInteger('item_classification_id')->unsigned();
             $table->foreign('item_classification_id')
                 ->references('id')

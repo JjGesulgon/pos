@@ -11,7 +11,7 @@
                         <div v-if="ifReady" class="row">
                             <div class="col-md-3 form-group">
                                 <label for="item">Item</label>
-                                <input id="item" type="text" class="form-control" v-model="salesItemPrice.item.name" autocomplete="off" maxlength="255">
+                                <input id="item" type="text" class="form-control" v-model="salesItemPrice.item.name_identifier" autocomplete="off" maxlength="255">
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="measuring-mass">Measuring Mass</label>

@@ -26,7 +26,7 @@ class Item extends Model
     protected $fillable = [
         'corporation_id', 'user_id',
         'sales_account_id', 'cost_of_goods_sold_account_id', 'expense_account_id', 'asset_account_id',
-        'item_classification_id', 'item_type_id', 'brand_id',
+        'brand_id', 'item_classification_id', 'item_type_id',
         'name', 'stock_keeping_unit', 'universal_product_code',
         'identifier', 'description',
         'default_purchase_item_price_id', 'default_sales_item_price_id',

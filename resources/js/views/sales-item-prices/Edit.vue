@@ -11,7 +11,7 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label for="item">Item <small class="text-danger">* Required</small></label>
-                                <search idAttribute="item" apiPath="/api/items/search" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Items" :selectedObject="$data.salesItemPrice.item" @SelectOption="selectItem($event)"></search>
+                                <search idAttribute="item" apiPath="/api/items/search" styleClass="form-control" labelAttribute="name_identifier" searchColumn="name" placeholder="Search Items" :selectedObject="$data.salesItemPrice.item" @SelectOption="selectItem($event)"></search>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="measuring-mass">Measuring Mass <small class="text-danger">* Required</small></label>
@@ -45,7 +45,7 @@
             return {
                 ifReady:               false,
                 action:                'Edit',
-                title:                 'Edit New Sales Item Price',
+                title:                 'Edit Sales Item Price',
                 singularName:          'Sales Item Price',
                 pluralName:            'Sales Item Prices',
                 apiPath:               '/api/sales-item-prices',

@@ -60,11 +60,13 @@ class SalesItemPriceRepository extends Repository
         }
 
         return $this->salesItemPrice->filter($request)
-        ->with(
-            'item',
+        ->with([
+            'item' => function ($query) {
+                $query->with('brand', 'itemClassification', 'itemType');
+            },
             'measuringMass',
             'unitOfMeasurement'
-        )
+        ])
         ->orderBy('created_at', $orderBy)
         ->paginate($length)
         ->withPath(

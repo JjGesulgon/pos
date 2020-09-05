@@ -10,6 +10,12 @@
                     <template v-slot:thead>
                         <tr>
                             <th scope="col">Item</th>
+                            <th scope="col">Stock Keeping Unit</th>
+                            <th scope="col">Universal Product Code</th>
+                            <th scope="col">Identifier</th>
+                            <th scope="col">Brand</th>
+                            <th scope="col">Item Classification</th>
+                            <th scope="col">Item Type</th>
                             <th scope="col">Measuring Mass</th>
                             <th scope="col">Unit of Measurement</th>
                             <th scope="col">Price</th>
@@ -17,12 +23,18 @@
                         </tr>
                     </template>
                     <template v-slot:tbody v-bind:data="$data">
-                        <tr :id="salesOrderPrice.id" :key="salesOrderPrice.id" v-for="salesOrderPrice in data.data">
-                            <td>{{ salesOrderPrice.item.name }}</td>
-                            <td>{{ salesOrderPrice.measuring_mass.mass }}</td>
-                            <td>{{ salesOrderPrice.unit_of_measurement.name }}</td>
-                            <td>{{ salesOrderPrice.price }}</td>
-                            <td><data-table-row-action :routePrefixName="routePrefixName" :object="salesOrderPrice"></data-table-row-action></td>
+                        <tr :id="salesItemPrice.id" :key="salesItemPrice.id" v-for="salesItemPrice in data.data">
+                            <td>{{ salesItemPrice.item.name }}</td>
+                            <td>{{ salesItemPrice.item.stock_keeping_unit }}</td>
+                            <td>{{ salesItemPrice.item.universal_product_code }}</td>
+                            <td>{{ salesItemPrice.item.identifier }}</td>
+                            <td>{{ salesItemPrice.item.brand.display_name }}</td>
+                            <td>{{ salesItemPrice.item.item_classification.display_name }}</td>
+                            <td>{{ salesItemPrice.item.item_type.display_name }}</td>
+                            <td>{{ salesItemPrice.measuring_mass.mass }}</td>
+                            <td>{{ salesItemPrice.unit_of_measurement.name }}</td>
+                            <td>{{ salesItemPrice.price }}</td>
+                            <td><data-table-row-action :routePrefixName="routePrefixName" :object="salesItemPrice"></data-table-row-action></td>
                         </tr>
                     </template>
                 </data-table>
@@ -63,9 +75,9 @@
         data() {
             return {
                 action:                        'View',
-                title:                         'Sales Order Prices',
-                singularName:                  'Sales Order Price',
-                pluralName:                    'Sales Order Prices',
+                title:                         'Sales Item Prices',
+                singularName:                  'Sales Item Price',
+                pluralName:                    'Sales Item Prices',
                 apiPath:                       '/api/sales-item-prices',
                 routeName:                     'sales-item-prices.index',
                 routePrefixName:               'sales-item-prices',

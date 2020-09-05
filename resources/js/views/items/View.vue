@@ -1,50 +1,45 @@
 <template>
     <div>
+        <breadcrumbs :routePrefixName="routePrefixName" :action="action" :singularName="singularName" :pluralName="pluralName" :useName="useName"></breadcrumbs>
+
         <div class="card">
-            <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'item-types.index' }">Items</router-link>
-                /
-                <span class="text-secondary">View Item</span>
-            </div>
             <div class="card-body">
-                <div v-if="ifReady">
-                    <fieldset disabled>
-                        <div class="row">
-                            <div class="col-md-4 form-group">
+                <form-title :routePrefixName="routePrefixName" :title="title" v-bind:showRightSide="false"></form-title>
+                <br>
+                <form-view :apiPath="apiPath" :routePrefixName="routePrefixName" :singularName="singularName" :object="item" :selectedProperty="selectedProperty" :toastMessage="toastMessage">
+                    <template v-bind:item="item" v-bind:ifReady="ifReady">
+                        <div v-if="ifReady" class="row">
+                            <div class="col-md-3 form-group">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control" v-model="item.name" readonly>
+                                <input id="name" type="text" class="form-control" v-model="item.name" readonly>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="stock-keeping-unit">Stock Keeping Unit</label>
+                                <input id="stock-keeping-unit" class="form-control" v-model="item.stock_keeping_unit" readonly>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="universal-product-code">Universal Product Code</label>
+                                <input id="universal-product-code" class="form-control" v-model="item.universal_product_code" readonly>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="identifier">Identifier</label>
+                                <input id="identifier" class="form-control" v-model="item.identifier" readonly>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" class="form-control" v-model="item.description" readonly></textarea>
                             </div>
                             <div class="col-md-4 form-group">
-                                <label for="name">Stock Keeping Unit</label>
-                                <input type="text" class="form-control" v-model="item.stock_keeping_unit" readonly>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label>Identifier</label>
-                                <input class="form-control" v-model="item.identifier" readonly></input>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" v-model="item.description" readonly></textarea>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3 form-group">
-                                <label>Item Type</label>
-                                <input type="text" class="form-control" v-model="item.item_type.name" readonly>
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label> Item Classification</label>
-                                <input type="text" class="form-control" v-model="item.item_classification.name" readonly>
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Default Unit of Measurement</label>
-                                <input type="text" class="form-control" v-model="item.default_unit_of_measurement.name" readonly>
-                            </div>
-                            <div class="col-md-3 form-group">
                                 <label>Brand</label>
-                                <input type="text" class="form-control" v-model="item.brand.name" readonly>
+                                <input type="text" class="form-control" v-model="item.brand.display_name" readonly>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Item Classification</label>
+                                <input type="text" class="form-control" v-model="item.item_classification.display_name" readonly>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Item Type</label>
+                                <input type="text" class="form-control" v-model="item.item_type.display_name" readonly>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>Default Purchase Item Price</label>
@@ -81,39 +76,8 @@
                                 </span>
                             </div>
                         </div>
-                    </fieldset>
-
-                    <br>
-
-                    <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'items.index' }"><i class="fas fa-chevron-left"></i>&nbsp; Back</router-link>
-                    <router-link class="btn btn-primary btn-sm" :to="{ name: 'items.edit' , params: { id: item.id }}"><i class="fas fa-edit"></i>&nbsp; Edit Item</router-link>
-                    <button type="button" class="btn btn-danger btn-sm" @click.prevent="openDeleteItemModal()"><i class="fas fa-trash-alt"></i>&nbsp; Delete Item</button>
-                </div>
-                <div v-else>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal fade" id="deleteItemModal" tabindex="-1" role="dialog" aria-labelledby="deleteItemTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">You're about to delete this Item</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete <b><u>{{item.name}}</u></b> ?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="deleteItem()">Confirm Delete</button>
-                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
+                    </template>
+                </form-view>
             </div>
         </div>
     </div>
@@ -123,44 +87,34 @@
     export default {
         data() {
             return {
-                ifReady: false,
-                accountType: "",
-                item: '',
-                itemType: '',
-                itemClass: '',
-                item_type_id: '',
-                item_classification_id: ''
+                ifReady:          false,
+                action:           'View',
+                title:            'View Item',
+                singularName:     'Item',
+                pluralName:       'Items',
+                apiPath:          '/api/items',
+                routePrefixName:  'items',
+                useName:          'singular',
+                selectedProperty: 'name',
+                toastMessage:     'Item',
+                item:             {}
             };
         },
 
         mounted() {
             let promise = new Promise((resolve, reject) => {
-                axios.get("/api/items/" + this.$route.params.id).then(res => {
+                axios.get(this.apiPath + '/' + this.$route.params.id).then(res => {
                     this.item = res.data.item;
                     resolve();
                 }).catch(err => {
                     reject();
-                    console.log(err);
                 });
             });
 
             promise.then(() => {
                 this.ifReady = true;
             });
-        },
-
-        methods: {
-            openDeleteItemModal() {
-                $('#deleteItemModal').modal('show');
-            },
-            deleteItem() {
-                axios.delete('/api/items/' + this.$route.params.id).then(res => {
-                    $('#deleteItemModal').modal('hide');
-                    this.$router.push({ name: 'items.index' });
-                }).catch(err => {
-                    console.log(err);
-                });
-            }
         }
-    };
+    }
 </script>
+
