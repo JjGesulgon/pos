@@ -69,7 +69,6 @@ trait FilterRelationships
                         });
                     });
                 } else {
-                    dump('Filtering Relationship Not Strict');
                     $query->orWhereHas(self::convertToRelationship($column), function ($query) use ($request, $column, $value) {
                         $query->where(function ($query) use ($column, $value) {
                             if (! is_array($value)) {
