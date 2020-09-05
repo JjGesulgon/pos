@@ -164,11 +164,11 @@ trait Filtering
             $column = str_replace($matchPair[0], '_' . lcfirst($matchPair[0]), $column);
         }
 
-        if (strpos($column, '_') !== false && preg_match('/\_./', $column)) {
-            return preg_replace('/\_$/', '', $column, 1);
-        } else {
-            return $column;
+        if (strpos($column, '_') !== false && preg_match('/\_$/', $column)) {
+            $column = preg_replace('/\_$/', '', $column, 1);
         }
+
+        return $column;
     }
 
     /**
