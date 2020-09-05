@@ -40,20 +40,25 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th width="35%" scope="col">Name</th>
-                                <th width="25%" scope="col">Unit of Measurement</th>
-                                <th width="15%" scope="col">Price</th>
-                                <th width="25%" scope="col">Options</th>
+                                <th scope="col">Brand Name</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Measuring Mass</th>
+                                <th scope="col">Unit Of Measurement</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Options</th>
                             </tr>
                         </thead>
                         <tbody v-if="items">
-                            <tr v-for="item in items">
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.default_unit_of_measurement.name }}</td>
-                                <td>{{ item.default_sales_item_price.price }}</td>
+                            <tr v-for="item in items" :key="item.id">
+                                <td>{{ item.brand.name }}</td>
+                                <td>{{ item.name }} {{ item.identifier }} {{ item.item_type.name }}</td>
+                                <td>{{ item.sales_item_prices[0].measuring_mass.mass }}</td>
+                                <td>{{ item.sales_item_prices[0].unit_of_measurement.abbreviation }}</td>
+                                <td v-if="item.default_sales_item_price">{{ item.default_sales_item_price }}</td>
+                                <td v-else>{{ item.sales_item_prices[0].price }}</td>
                                 <td>
                                     <div v-if="item.stocks_available != 0">
-                                        <label class="text-secondary clickableText" @click.prevent.default="addToCart(item)">
+                                        <label class="text-secondary clickableText" @click.prevent="addToCart(item)">
                                             <i class="fas fa-cart-arrow-down"></i>&nbsp;
                                             <strong>Add to Cart</strong>
                                         </label>
@@ -72,68 +77,6 @@
             </div>
 
             <br>
-
-            <div class="clearfix">
-                <div v-if="pageCount">
-                    <nav class="float-left">
-                        <ul class="pagination">
-                            <li class="page-item" v-bind:class="isPrevDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToPreviousPage" disabled><strong>Previous</strong></a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" @click.prevent="goToFirstPage"><strong>First</strong></a>
-                            </li>
-                            <li class="page-item" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
-                                <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)"><strong>{{ pageNumber }}</strong></a>
-                            </li>
-                            <li class="page-item" v-bind:class="isNextDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToLastPage"><strong>Last</strong></a>
-                            </li>
-                            <li class="page-item" v-bind:class="isNextDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToNextPage"><strong>Next</strong></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <div v-else>
-                    <nav class="float-left">
-                        <ul class="pagination">
-                            <li class="page-item" v-bind:class="isPrevDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToPreviousPage" disabled><strong>Previous</strong></a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" @click.prevent="goToFirstPage"><strong>First</strong></a>
-                            </li>
-                            <li class="page-item" v-for="pageNumber in pageNumbers" v-bind:class="isPageActive(pageNumber)">
-                                <a class="page-link" href="#" @click.prevent="goToPage(pageNumber)"><strong>{{ pageNumber }}</strong></a>
-                            </li>
-                            <li class="page-item" v-bind:class="isNextDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToLastPage"><strong>Last</strong></a>
-                            </li>
-                            <li class="page-item" v-bind:class="isNextDisabled">
-                                <a class="page-link" href="#" @click.prevent="goToNextPage"><strong>Next</strong></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <div class="float-right">
-                    <form class="form-inline">
-                        <label class="sr-only" for="number_of_items">Number of Item</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">Items per page</div>
-                            </div>
-                            <select class="custom-select" id="number_of_items" v-model="meta.per_page" v-on:change="changePerPage">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                                <option value="25">25</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-            </div>
 
             <div class="modal fade" id="checkout-modal" tabindex="-1" role="dialog" aria-labelledby="checkout" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -155,7 +98,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-if="cart">
-                                    <tr v-for="item in cart">
+                                    <tr v-for="item in cart" :key="item.id">
                                         <td>{{ item.name }}</td>
                                         <td>{{ item.amount }}</td>
                                         <td>{{ item.qty }}</td>
@@ -189,7 +132,7 @@
                             </div>
                         </div>
                         <div class="modal-footer" v-else>
-                            <button type="button" class="btn btn-success btn-sm" @click.prevent.default="createNewTransaction()">Proceed</button>
+                            <button type="button" class="btn btn-success btn-sm" @click.prevent="createNewTransaction()">Proceed</button>
                         </div>
                     </div>
                 </div>
@@ -211,7 +154,7 @@
                             </tr>
                         </thead>
                         <tbody v-if="cart">
-                            <tr v-for="item in cart">
+                            <tr v-for="item in cart" :key="item.id">
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.amount }}</td>
                                 <td>
@@ -221,8 +164,8 @@
                                     {{ (item.qty * item.amount).toFixed(2) }}
                                 </td>
                                 <td>
-                                    <label class="text-danger clickableText" @click.prevent.default="removeFromCart(item)">
-                                        <i class="fas fa-trash-alt"></i></i>&nbsp;
+                                    <label class="text-danger clickableText" @click.prevent="removeFromCart(item)">
+                                        <i class="fas fa-trash-alt"></i>&nbsp;
                                         <strong>Remove</strong>
                                     </label>
                                 </td>
@@ -257,7 +200,7 @@
                             <tr class="no-border" v-if="priceSummation() != 0">
                                 <td scope="row" colspan="4"></td>
                                 <td scope="row">
-                                    <button type="button" class="btn btn-success btn-sm" @click.prevent.default="openCheckoutModal()">
+                                    <button type="button" class="btn btn-success btn-sm" @click.prevent="openCheckoutModal()">
                                         <i class="fas fa-cash-register"></i>&nbsp;
                                         Checkout
                                     </button>
@@ -272,22 +215,6 @@
 </template>
 
 <script>
-    const searchItemsForSales = (page, per_page, name, order_by, callback) => {
-        const params = { page, per_page, name, order_by };
-
-        axios.get('/api/items/search-for-sales', { params }).then(res => {
-            callback(null, res.data);
-        }).catch(error => {
-            if (error.response.status == 401) {
-                location.reload();
-            }
-
-            if (error.response.status == 500) {
-                alert('Kindly report this issue to the devs.');
-            }
-        });
-    };
-
     export default {
         data() {
             return {
@@ -297,21 +224,6 @@
                 cart: [],
                 cash: 0,
                 order_by: 'desc',
-                meta: {
-                    current_page: null,
-                    from: null,
-                    last_page: null,
-                    path: null,
-                    per_page: 10,
-                    to: null,
-                    total: null
-                },
-                links: {
-                    first: null,
-                    last: null,
-                    next: null,
-                    prev: null,
-                },
                 error: null,
                 showProgress: false,
                 pageNumbers: [],
@@ -319,80 +231,7 @@
             };
         },
 
-        beforeRouteEnter (to, from, next) {
-            if (to.query.per_page == null) {
-                searchItemsForSales(
-                    to.query.page,
-                    10,
-                    to.query.name,
-                    to.query.order_by,
-                    (err, data) => {
-                        next(vm => vm.setData(err, data));
-                    }
-                    );
-            } else {
-                searchItemsForSales(
-                    to.query.page,
-                    to.query.per_page,
-                    to.query.name,
-                    to.query.order_by,
-                    (err, data) => {
-                        next(vm => vm.setData(err, data));
-                    }
-                    );
-            }
-        },
-
-        beforeRouteUpdate (to, from, next) {
-            searchItemsForSales(
-                to.query.page,
-                this.meta.per_page,
-                this.name,
-                this.order_by,
-                (err, data) => {
-                    this.setData(err, data);
-                    next();
-                }
-                );
-        },
-
         computed: {
-            nextPage() {
-                return this.meta.current_page + 1;
-            },
-            prevPage() {
-                return this.meta.current_page - 1;
-            },
-            paginatonCount() {
-                if (! this.meta) {
-                    return;
-                }
-
-                const { current_page, last_page } = this.meta;
-
-                return `${current_page} of ${last_page}`;
-            },
-            pageCount() {
-                if (this.meta.last_page > 10) {
-                    return false;
-                }
-
-                return true;
-            },
-            isPrevDisabled() {
-                if (this.links.prev == null) {
-                    return 'disabled';
-                }
-
-                return;
-            },
-            isNextDisabled() {
-                if (this.links.next == null) {
-                    return 'disabled';
-                }
-
-                return;
-            },
             // subTotalAmount() {
             //     return this.purchase_order_items.map((purchase_order_item) => {
             //         return (purchase_order_item.quantity * purchase_order_item.unit_price);
@@ -406,152 +245,19 @@
         },
 
         methods: {
-            goToFirstPage() {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: 1,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
-            goToPage(page = null) {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
-            goToLastPage() {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: this.meta.last_page,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
-            goToNextPage() {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: this.nextPage,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
-            goToPreviousPage() {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: this.prevPage,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
-            setData(err, { data: items, links, meta }) {
-                this.pageNumbers = [];
-
-                if (err) {
-                    this.error = err.toString();
-                } else {
-                    this.items = items;
-                    this.links = links;
-                    this.meta = meta;
-                }
-
-                this.showProgress = false;
-                this.populatePages();
-            },
-            populatePages() {
-                if (this.pageCount) {
-                    for (let i = 1; i <= this.meta.last_page; i++) {
-                        this.pageNumbers.push(i);
-                    }
-                } else if (this.meta.current_page <= 6) {
-                    let page = 1;
-                    this.pageNumbers.push(page);
-                    this.pageNumbers.push(page + 1);
-                    this.pageNumbers.push(page + 2);
-                    this.pageNumbers.push(page + 3);
-                    this.pageNumbers.push(page + 4);
-                    this.pageNumbers.push(page + 5);
-                    this.pageNumbers.push(page + 6);
-                    this.pageNumbers.push('...');
-                    this.pageNumbers.push(this.meta.last_page - 1);
-                    this.pageNumbers.push(this.meta.last_page);
-                } else if ((this.meta.current_page + 6) >= this.meta.last_page) {
-                    this.pageNumbers.push(1);
-                    this.pageNumbers.push(2);
-                    this.pageNumbers.push('...');
-                    this.pageNumbers.push(this.meta.last_page - 7);
-                    this.pageNumbers.push(this.meta.last_page - 6);
-                    this.pageNumbers.push(this.meta.last_page - 5);
-                    this.pageNumbers.push(this.meta.last_page - 4);
-                    this.pageNumbers.push(this.meta.last_page - 3);
-                    this.pageNumbers.push(this.meta.last_page - 2);
-                    this.pageNumbers.push(this.meta.last_page - 1);
-                    this.pageNumbers.push(this.meta.last_page);
-                } else {
-                    this.pageNumbers.push(1);
-                    this.pageNumbers.push(2);
-                    this.pageNumbers.push('...');
-                    this.pageNumbers.push(this.meta.current_page - 2);
-                    this.pageNumbers.push(this.meta.current_page - 1);
-                    this.pageNumbers.push(this.meta.current_page);
-                    this.pageNumbers.push(this.meta.current_page + 1);
-                    this.pageNumbers.push(this.meta.current_page + 2);
-                    this.pageNumbers.push('...');
-                    this.pageNumbers.push(this.meta.last_page - 1);
-                    this.pageNumbers.push(this.meta.last_page);
-                }
-            },
-            isPageActive(page) {
-                if (page == this.$route.query.page || (page == 1 && this.$route.query.page == null)) {
-                    return 'active';
-                }
-
-                return;
-            },
-            changePerPage() {
-                this.showProgress = true;
-                this.$router.push({
-                    name: 'transactions.index',
-                    query: {
-                        page: 1,
-                        per_page: this.meta.per_page,
-                        name: this.name,
-                        order_by: this.order_by
-                    }
-                });
-            },
             onSearch() {
                 this.search(this.itemName, this);
             },
             search: _.debounce((itemName, vm) => {
                 axios.get('/api/items/search-for-sales', {
                     params: {
-                        name: itemName
+                        name: itemName,
+                        identifier: itemName,
+                        name_from_item_type: itemName,
+                        name_from_brand: itemName
                     }
                 }).then(res => {
-                    vm.items = res.data.data;
+                    vm.items = res.data;
                 });
             }, 250),
             clear() {
@@ -575,8 +281,8 @@
                     var cartItem = {
                         id: item.id,
                         name: item.name,
-                        amount: item.amount,
-                        stocks_available: item.stocks_available,
+                        amount: item.default_sales_item_price ? item.default_sales_item_price : item.sales_item_prices[0].price,
+                        stocks_available: item.stock_keeping_unit,
                         qty: 1
                     }
                     this.cart.push(cartItem);
