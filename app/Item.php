@@ -34,6 +34,13 @@ class Item extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['name_identifier'];
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -49,6 +56,16 @@ class Item extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * Get the item's name identifier.
+     *
+     * @return string
+     */
+    public function getNameIdentifierAttribute()
+    {
+        return "{$this->name} {$this->identifier} {$this->itemType->display_name}";
+    }
 
     /**
      * Run functions on boot.
