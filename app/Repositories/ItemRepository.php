@@ -131,7 +131,10 @@ class ItemRepository extends Repository
             'itemType',
             'defaultSalesItemPrice' => function ($query) {
                 $query->with('measuringMass', 'unitOfMeasurement');
-            }
+            },
+            'salesItemPrices'=> function ($query) {
+              $query->with('measuringMass', 'unitOfMeasurement');
+            },
         ])
         ->whereHas('stocks', function ($query) {
             $query->where('quantity', '>=', 1);
