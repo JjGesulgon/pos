@@ -50,11 +50,11 @@
                         </thead>
                         <tbody v-if="items">
                             <tr v-for="item in items" :key="item.id">
-                                <td>{{ item.brand.name }}</td>
-                                <td>{{ item.name }} {{ item.identifier }} {{ item.item_type.name }}</td>
+                                <td>{{ item.brand.display_name }}</td>
+                                <td>{{ item.name_identifier }}</td>
                                 <td>{{ item.sales_item_prices[0].measuring_mass.mass }}</td>
                                 <td>{{ item.sales_item_prices[0].unit_of_measurement.abbreviation }}</td>
-                                <td v-if="item.default_sales_item_price">{{ item.default_sales_item_price }}</td>
+                                <td v-if="item.default_sales_item_price">{{ item.default_sales_item_price.price }}</td>
                                 <td v-else>{{ item.sales_item_prices[0].price }}</td>
                                 <td>
                                     <div v-if="item.stocks_available != 0">
