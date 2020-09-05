@@ -141,7 +141,7 @@
                 business_type: '',
                 company: '',
                 company_address: '',
-                mode_of_payment_id: '',
+                mode_of_payment_id: 1,
                 bank_name: '',
                 bank_account_number: '',
                 tin_number: '',

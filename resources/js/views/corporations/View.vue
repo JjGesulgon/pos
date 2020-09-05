@@ -1,43 +1,42 @@
 <template>
     <div>
-        <div class="card">
-            <div class="card-header">
-                <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
-                /
-                <span class="text-secondary">View Corporation</span>
-            </div>
-            <div class="card-body">
-                <div v-if="ifReady">
-                    <fieldset disabled>
-                        <div class="form-group">
+      <breadcrumbs :routePrefixName="routePrefixName" :action="action" :singularName="singularName" :pluralName="pluralName" :useName="useName"></breadcrumbs>
+
+      <div class="card">
+          <div class="card-body">
+              <form-title :routePrefixName="routePrefixName" :title="title" v-bind:showRightSide="false"></form-title>
+              <br>
+              <form-view :apiPath="apiPath" :routePrefixName="routePrefixName" :singularName="singularName" :object="corporation" :selectedProperty="selectedProperty" :toastMessage="toastMessage">
+                  <template v-bind:corporation="corporation">
+                      <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" v-model="corporation.name">
+                            <input type="text" class="form-control" v-model="corporation.name" readonly>
                         </div>
 
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <textarea class="form-control" v-model="corporation.description"></textarea>
+                            <textarea class="form-control" v-model="corporation.description" readonly></textarea>
                         </div>
 
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="street">Street</label>
-                                    <input type="text" class="form-control" v-model="corporation.street">
+                                    <input type="text" class="form-control" v-model="corporation.street" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="city">City</label>
-                                    <input type="text" class="form-control" v-model="corporation.city">
+                                    <input type="text" class="form-control" v-model="corporation.city" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="state">State</label>
-                                    <input type="text" class="form-control" v-model="corporation.state">
+                                    <input type="text" class="form-control" v-model="corporation.state" readonly>
                                 </div>
                             </div>
                         </div>
@@ -46,88 +45,29 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="zip_code">Zip Code</label>
-                                    <input type="text" class="form-control" v-model="corporation.zip_code">
+                                    <input type="text" class="form-control" v-model="corporation.zip_code" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="country">Country</label>
-                                    <input type="text" class="form-control" v-model="corporation.country">
+                                    <input type="text" class="form-control" v-model="corporation.country" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="fax">Fax</label>
-                                    <input type="text" class="form-control" v-model="corporation.fax">
+                                    <input type="text" class="form-control" v-model="corporation.fax" readonly>
                                 </div>
                             </div>
                         </div>
-                    </fieldset>
+                  </template>
+              </form-view>
+          </div>
+      </div> 
 
-                    <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'corporations.index' }"><i class="fas fa-chevron-left"></i>&nbsp; Back</router-link>
-                    <button type="button" class="btn btn-primary btn-sm" @click.prevent.default="editCorporation"><i class="fas fa-edit"></i>&nbsp;  Edit Corporation</button>
-                    <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="openDeleteCorporationModal"><i class="fas fa-trash-alt"></i>&nbsp; Delete Corporation</button>
-                </div>
-                <div v-else>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="deleteCorporationModal" tabindex="-1" role="dialog" aria-labelledby="deleteCorporationTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">You're about to delete this Corporation?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete this Corporation? <br><br>
-                        Deleting this will delete the following data related to this corporation: <br><br>
-                        - Contacts <br>
-                        - Contact Types <br>
-                        - Departments <br>
-                        - Sub-Departments <br>
-                        - Branches <br>
-                        - Warehouses <br>
-                        - Budgets <br>
-                        - Journals <br>
-                        - Journal Entries <br>
-                        - Vouchers <br>
-                        - Voucher Entries <br>
-                        - Purchase Orders <br>
-                        - Purchase Orders Items <br>
-                        - Receive Orders <br>
-                        - Receive Order Items <br>
-                        - Bills <br>
-                        - Bill Items <br>
-                        - Bill Payments <br>
-                        - Debit Memorandums <br>
-                        - Debit Memorandum Items <br>
-                        - Quotations <br>
-                        - Quotation Items <br>
-                        - Invoices <br>
-                        - Credit Memorandums <br>
-                        - Credit Memorandum Items <br>
-                        - Statistics <br>
-                        - Metrics <br><br>
-
-                        that are all related to this Corporation.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-sm" @click.prevent.default="deleteCorporation">Confirm Delete</button>
-                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -135,48 +75,33 @@
     export default {
         data() {
             return {
-                ifReady: false,
-                corporation: ''
+                ifReady:          false,
+                action:           'View',
+                title:            'View Corporation',
+                singularName:     'Corporation',
+                pluralName:       'Corporations',
+                apiPath:          '/api/corporations',
+                routePrefixName:  'corporations',
+                useName:          'singular',
+                selectedProperty: 'name',
+                toastMessage:     'Corporation',
+                corporation:            {}
             };
         },
 
         mounted() {
             let promise = new Promise((resolve, reject) => {
-                axios.get('/api/corporations/' + this.$route.params.id).then(res => {
+                axios.get(this.apiPath + '/' + this.$route.params.id).then(res => {
                     this.corporation = res.data.corporation;
                     resolve();
+                }).catch(err => {
+                    reject();
                 });
             });
 
             promise.then(() => {
                 this.ifReady = true;
             });
-        },
-
-        methods: {
-            viewCorporations() {
-                this.$router.push({
-                    name: 'corporations.index'
-                });
-            },
-            editCorporation() {
-                this.$router.push({
-                    name: 'corporations.edit',
-                    params: { id: this.corporation.id }
-                });
-            },
-            openDeleteCorporationModal() {
-                $('#deleteCorporationModal').modal('show');
-            },
-            deleteCorporation() {
-                $('#deleteCorporationModal').modal('hide');
-
-                axios.delete('/api/corporations/' + this.$route.params.id).then(res => {
-                    this.$router.push({ name: 'corporations.index' });
-                }).catch(err => {
-                    console.log(err);
-                });
-            }
         }
     }
 </script>

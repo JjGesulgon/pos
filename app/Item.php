@@ -118,16 +118,6 @@ class Item extends Model
     }
 
     /**
-     * The item belongs to a default unit of measurement.
-     *
-     * @return object
-     */
-    public function defaultUnitOfMeasurement()
-    {
-        return $this->belongsTo(UnitOfMeasurement::class, 'default_unit_of_measurement_id');
-    }
-
-    /**
      * The item belongs to a default purchase item price.
      *
      * @return object
@@ -188,16 +178,6 @@ class Item extends Model
     }
 
     /**
-     * The item has many unit of measurements.
-     *
-     * @return array object
-     */
-    public function unitOfMeasurements()
-    {
-        return $this->hasMany(UnitOfMeasurement::class);
-    }
-
-    /**
      * The item has many purchase item prices.
      *
      * @return array object
@@ -224,7 +204,7 @@ class Item extends Model
      */
     public function salesItemPrices()
     {
-        return $this->hasMany(SalesItemPrices::class);
+        return $this->hasMany(SalesItemPrice::class);
     }
 
     /**

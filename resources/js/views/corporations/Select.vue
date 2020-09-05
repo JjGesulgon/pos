@@ -1,18 +1,27 @@
 <template>
     <div>
-        <div v-if="ifReady">
-            <div class="card">
-                <div class="card-header">
-                    <router-link class="text-primary" :to="{ name: 'corporations.index' }">Corporations</router-link>
-                    /
-                    <span class="text-secondary">Select Corporation</span>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><router-link :to="{ name: 'corporations.index' }">Corporations</router-link></li>
+                <li class="breadcrumb-item active" aria-current="page">View Corporations</li>
+            </ol>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <div class="float-left">
+                        <h4>Select Corporation</h4>
+                    </div>
                 </div>
-                <div class="card-body">
+
+                <br>
+
+                <div v-if="ifReady">
                     <form v-on:submit.prevent="selectCorporation()">
                         <div class="form-group">
-                            <label for="name">Select Corporation</label>
-                            
-                            <select class="form-control" v-model="selectedCorporation" required>
+                            <label for="select-corporation">Select Corporation</label>
+                            <select id="select-corporation" class="form-control" v-model="selectedCorporation" required>
                                 <option v-for="corporation in corporations" :value="corporation">{{ corporation.name }}</option>
                             </select>
                         </div>
@@ -20,11 +29,11 @@
                         <button type="submit" class="btn btn-success btn-sm">Select Corporation</button>
                     </form>
                 </div>
-            </div>
-        </div>
-        <div v-else>
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                <div v-else>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -68,11 +77,14 @@
         methods: {
             selectCorporation() {
                 this.ifReady = false;
-                
+
                 let promise = new Promise((resolve, reject) => {
                     this.$store.commit('selectCorporation', this.selectedCorporation);
+
                     localStorage.setItem('selectedCorporation', JSON.stringify(this.selectedCorporation));
+
                     Broadcast.$emit('ChangeCorporation', { corporation: this.selectedCorporation });
+
                     resolve();
                 });
 

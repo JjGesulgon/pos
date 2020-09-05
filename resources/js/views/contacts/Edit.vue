@@ -14,7 +14,7 @@
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <label>Contact Type</label>
-                                    <vue-select v-model="contactType" @input="selectContactType()" label="display_name" :options="contactTypes"></vue-select>
+                                    <vue-select class="form-control" v-model="contactType" @input="selectContactType()" label="display_name" :options="contactTypes"></vue-select>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label for="company">Business Type</label>
@@ -80,11 +80,11 @@
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label>Payment Method</label>
-                                    <vue-select v-model="mode_of_payment" @input="selectPaymentMethod()" label="name" :options="modeOfPayments"></vue-select>
+                                    <vue-select class="form-control" v-model="mode_of_payment" @input="selectPaymentMethod()" label="name" :options="modeOfPayments"></vue-select>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label>Credit Limit</label>
-                                    <input type="number" class="form-control" v-model="credit_limit" min="0" max="99999999" required>
+                                    <input type="number" class="form-control" v-model="credit_limit" min="0" max="99999999">
                                 </div>
                                 <div class="col-md-6 form-group" v-show="selectedBank">
                                     <label for="name">Bank</label>
@@ -108,7 +108,7 @@
                         <br>
 
                         <router-link class="btn btn-outline-secondary btn-sm" :to="{ name: 'contacts.view', params: { id: id }}"><i class="fas fa-chevron-left"></i>&nbsp; Back</router-link>
-                        <button type="button" class="btn btn-success btn-sm"><i class="fas fa-edit"></i>&nbsp; Update Contact</button>
+                        <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-edit"></i>&nbsp; Update Contact</button>
                     </form>
                 </div>
             </div>
@@ -227,6 +227,10 @@
                 this.ifReady = false;
 
                 axios.patch('/api/contacts/' + this.$route.params.id, this.$data).then(res => {
+                    Broadcast.$emit('ToastMessage', {
+                        message: 'Contact Updated Successfully'
+                    });
+
                     this.$router.push({
                         name: 'contacts.view',
                         params: { id: this.$route.params.id }

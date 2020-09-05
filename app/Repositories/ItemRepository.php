@@ -125,10 +125,14 @@ class ItemRepository extends Repository
         }
 
         return $this->item->filter($request)
-        ->with(
+        ->with([
             'brand',
-            'defaultSalesItemPrice'
-        )
+            'itemClassification',
+            'itemType',
+            'defaultSalesItemPrice' => function ($query) {
+                $query->with('measuringMass', 'unitOfMeasurement');
+            }
+        ])
         ->whereHas('stocks', function ($query) {
             $query->where('quantity', '>=', 1);
         })

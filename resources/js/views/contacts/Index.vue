@@ -10,12 +10,9 @@
                 <div class="float-right">
                     <router-link class="btn btn-success btn-sm" :to="{ name: 'contacts.create' }"><i class="fas fa-plus"></i>&nbsp; Create New Contact</router-link>
                 </div>
-                <div class="float-right col-md-6">
-                    <input type="text" class="form-control form-control-sm" v-model="itemName" @input="onSearch" placeholder="Quick Search">
-                </div>
             </div>
             <div class="card-body">
-                <table class="table table-hover table-sm table-striped">
+                <table class="table table-hover table-sm">
                     <caption>
                         <div class="row">
                             <div class="col-md-9">
@@ -28,7 +25,7 @@
                             </div>
                         </div>
                     </caption>
-                    <thead>
+                    <thead class="thead-light">
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
@@ -224,7 +221,6 @@
     export default {
         data() {
             return {
-                itemName: '',
                 componentVal: 'Contact',
                 name:'',
                 email:'',
@@ -475,28 +471,6 @@
                     }
                 });
             },
-            onSearch() {
-                this.search(this.itemName, this);
-            },
-            search: _.debounce((itemName, vm) => {
-                // axios.get(`/api/items/search?value=${escape(itemName)}`)
-                axios.post('/api/contacts/search', {
-                    page: 1, 
-                    per_page: null, 
-                    name: itemName,
-                    email: null,
-                    mobile_number: null,
-                    type: null,
-                    company_name: null,
-                    company_address: null,
-                    credit_limit: null,
-                    order_by: this.order_by
-                })
-                .then(res => {
-                    console.log(res);
-                    vm.contacts = res.data.data;
-                });
-            }, 250),
             search() {
                 $('#searchModal').modal('hide');
                 this.showProgress = true;
