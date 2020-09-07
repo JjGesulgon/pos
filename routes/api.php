@@ -12,6 +12,12 @@ Route::group(['middleware' => ['api']], function () {
     // Get Authenticated User
     Route::get('/auth/user', 'AuthController@user');
 
+    // Branches
+    Route::match(['put', 'patch'], '/branches/{contact}/restore', 'BranchesController@restore');
+    Route::delete('/branches/{contact}/force-delete', 'BranchesController@forceDestroy');
+    Route::get('/branches/search', 'BranchesController@search');
+    Route::apiResource('branches', 'BranchesController');
+
     // Contacts
     Route::match(['put', 'patch'], '/contacts/{contact}/restore', 'ContactsController@restore');
     Route::delete('/contacts/{contact}/force-delete', 'ContactsController@forceDestroy');
@@ -79,4 +85,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::match(['put', 'patch'], '/users/{user}/restore', 'UsersController@restore');
     Route::delete('/users/{user}/force-delete', 'UsersController@forceDestroy');
     Route::apiResource('users', 'UsersController');
+
+    // Warehouses
+    Route::match(['put', 'patch'], '/warehouses/{warehouse}/restore', 'WarehousesController@restore');
+    Route::delete('/warehouses/{warehouse}/force-delete', 'WarehousesController@forceDestroy');
+    Route::get('/warehouses/search', 'WarehousesController@search');
+    Route::apiResource('warehouses', 'WarehousesController');
 });
