@@ -33,17 +33,21 @@ class ContactTypesController extends Controller
      */
     public function index()
     {
-        $data = ContactTypeResource::collection(
-            $this->contactType->paginateWithFilters(request(), request()->per_page, request()->order_by)
+        $contactTypes = ContactTypeResource::collection(
+            $this->contactType->paginateWithFilters(
+                request(),
+                request()->per_page,
+                request()->order_by
+            )
         );
 
-        if (! $data) {
+        if (! $contactTypes) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $data;
+        return $contactTypes;
     }
 
     /**
@@ -197,22 +201,19 @@ class ContactTypesController extends Controller
     {
         if (cache()->has('content-types')) {
             return response()->json([
-                'response'      => true,
-                'message'       => 'Resources successfully retrieve.',
+                'message'       => 'Resources successfully retrieve',
                 'contact_types' => cache('content-types', 5)
             ], 200);
         }
 
         if (! $contactTypes = $this->contactType->all()) {
             return response()->json([
-                'response' => false,
-                'message'  => 'Resources does not exist.'
+                'message'  => 'Resources does not exist'
             ], 400);
         }
 
         return response()->json([
-            'response' => true,
-            'message'  => 'Resources successfully retrieve.',
+            'message'  => 'Resources successfully retrieve',
             'contact_types' => $contactTypes
         ], 200);
     }
