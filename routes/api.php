@@ -36,6 +36,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('/corporations/get-all-corporations', 'CorporationsController@getAllCorporations');
     Route::apiResource('corporations', 'CorporationsController');
 
+    // Documents
+    Route::post('/documents/get-reference-number-total-count', 'DocumentsController@getReferenceNumberTotalCount');
+    Route::post('/documents/get-number-total-count', 'DocumentsController@getNumberTotalCount');
+
     // Items
     Route::match(['put', 'patch'], '/items/{item}/restore', 'ItemsController@restore');
     Route::delete('/items/{item}/force-delete', 'ItemsController@forceDestroy');

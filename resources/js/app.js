@@ -29,12 +29,16 @@ import App from './views/layouts/App';
 import router from './router';
 import store from './store';
 import VueSelect from 'vue-select';
+import DocumentGenerator from './plugins/document-generator';
 
 // Component to Component Broadcasting
 window.Broadcast = new Vue();
 
 // Vue Select
 Vue.component('vue-select', VueSelect);
+
+// Document Generator
+Vue.use(DocumentGenerator);
 
 // Layouts
 Vue.component('navbar', require('./views/layouts/Navbar.vue'));
