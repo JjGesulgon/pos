@@ -155,4 +155,26 @@ class TransactionsController extends Controller
             'message' => 'Resource successfully deleted'
         ], 200);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getTotalTransaction(Request $request)
+    {
+        
+        if (! $transaction = $this->transaction->getTotalTransaction($request)) {
+            return response()->json([
+                'message' => 'Resource does not exist'
+            ], 400);
+        }
+
+        return response()->json([
+            'response' => true,
+            'message'  => 'Resource successfully retrieve',
+            'transaction'    => $transaction
+        ], 200);
+    }
 }

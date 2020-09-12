@@ -37,4 +37,19 @@ class TransactionRepository extends Repository
         $transaction = $this->transaction::with('transactionItems.item')->findOrFail($id);
         return $transaction;
     }
+
+    /**
+     * Get the transaction with transaction items with items
+     *
+     * @return array json object
+     */
+    public function getTotalTransaction($request)
+    {
+        // $transaction = $this->transaction::with('transactionItems.item')->findOrFail($id);
+        
+        $transaction = $this->transaction
+                            ->whereBetween('created_at', [$request->startDate, $request->endDate])
+                            ->get();
+        return $transaction;
+    }
 }
