@@ -6,7 +6,7 @@
                 <div class="col-md-2" style="padding-right: 0px;">
                     <sidebar></sidebar>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10" style="height: 2000px;">
                     <div class="mt-3">
                         <transition name="fade" mode="out-in">
                             <router-view></router-view>

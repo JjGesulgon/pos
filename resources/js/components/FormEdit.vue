@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form v-on:submit.prevent="update()">
+        <form v-on:submit.prevent="update">
             <div v-if="$parent.ifReady">
                 <slot></slot>
             </div>
@@ -12,7 +12,7 @@
 
             <br>
 
-            <button class="btn btn-outline-secondary btn-sm" @click="backToIndex()">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @click="backToIndex">
                 <i class="fas fa-chevron-left"></i>&nbsp; Back
             </button>
             <button v-if="$parent.ifReady" type="submit" class="btn btn-success btn-sm">

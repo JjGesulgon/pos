@@ -44,9 +44,10 @@ class CreateTransactionItemsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('quantity')->unsigned();
-            $table->decimal('discount_percent', 3, 2)->unsigned()->nullable();
+            $table->json('item_sales_discounts')->nullable();
+            $table->json('brand_sales_discounts')->nullable();
             $table->decimal('discount_amount', 20, 2)->unsigned()->nullable();
-            $table->decimal('tax_percent', 3, 2)->unsigned()->nullable();
+            $table->json('tax_percent')->nullable();
             $table->decimal('tax_amount', 20, 2)->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();

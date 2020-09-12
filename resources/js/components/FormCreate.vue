@@ -1,5 +1,5 @@
 <template>
-    <form v-on:submit.prevent="create()">
+    <form v-on:submit.prevent="create">
         <div v-if="$parent.ifReady">
             <slot></slot>
         </div>
@@ -11,7 +11,7 @@
 
         <br>
 
-        <button class="btn btn-outline-secondary btn-sm" @click="backToIndex()">
+        <button type="button" class="btn btn-outline-secondary btn-sm" @click="backToIndex">
             <i class="fas fa-chevron-left"></i>&nbsp; Back
         </button>
         <button v-if="$parent.ifReady" type="submit" class="btn btn-success btn-sm">
@@ -30,6 +30,11 @@
             fieldColumns: null,
             toastMessage: String,
             isDisabled: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            returnHere: {
                 type: Boolean,
                 required: false,
                 default: false
@@ -57,7 +62,12 @@
                         toastMessage: `${this.toastMessage} created successfully.`
                     });
 
-                    this.$router.push({ name: `${this.routePrefixName}.index` });
+                    if (! this.returnHere) {
+                        this.$router.push({ name: `${this.routePrefixName}.index` });
+                    } else {
+                        this.$parent.clearFields();
+                        this.$parent.ifReady = true;
+                    }
                 }).catch(err => {
                     console.log(err);
                     this.$parent.ifReady = true;
