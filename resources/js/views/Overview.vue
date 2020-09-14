@@ -8,7 +8,9 @@
                             <div class="card-body row">
                                 <div class="col-md-12 col-sm-12 text-center  center">
                                     <h1 v-if="totalTransactions">{{ totalTransactions.length }}</h1>
-                                    <h1 v-else>0</h1>
+                                    <div v-else class="fa-3x">
+                                      <i class="fas fa-spinner fa-pulse"></i>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer text-center">
@@ -23,7 +25,10 @@
                         <div class="card card-min">
                             <div class="card-body row">
                                 <div class="col-md-12 col-sm-12 text-center  center">
-                                    <h1>{{ total_sales_today }} PHP</h1>
+                                    <h1 v-if="totalTransactions">{{ total_sales_today }} PHP</h1>
+                                    <div v-else class="fa-3x">
+                                      <i class="fas fa-spinner fa-pulse"></i>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer text-center">
@@ -38,7 +43,10 @@
                         <div class="card card-min">
                             <div class="card-body row">
                                 <div class="col-md-12 col-sm-12 text-center  center">
-                                    <h1>{{ total_sales_week }} PHP</h1>
+                                    <h1 v-if="totalWeekTransactions">{{ total_sales_week }} PHP</h1>
+                                    <div v-else class="fa-3x">
+                                      <i class="fas fa-spinner fa-pulse"></i>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer text-center">
@@ -53,7 +61,10 @@
                         <div class="card card-min">
                             <div class="card-body row">
                                 <div class="col-md-12 col-sm-12 text-center  center">
-                                    <h1>{{ total_sales_month }} PHP</h1>
+                                    <h1 v-if="totalMonthTransactions">{{ total_sales_month }} PHP</h1>
+                                    <div v-else class="fa-3x">
+                                      <i class="fas fa-spinner fa-pulse"></i>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer text-center">
@@ -66,6 +77,13 @@
                 </div>
             </div>
         </div>
+        <div v-if="total_sales_month != 0" class="mt-5">
+          <h1 class="text-center">{{ currentMonth }} Sales</h1>
+          <br>
+          <div class="container">
+            <line-chart v-if="chartdata.labels" :chartData="chartdata"  :height="200"/>
+          </div>
+        </div>
     </div>
 </template>
 
@@ -73,12 +91,17 @@
     export default {
       data() {
           return {
-            ifReady: false,
             totalTransactions: null,
             totalWeekTransactions: null,
             totalMonthTransactions: null,
-            totalWeekSales: null,
-            totalMonthSales: null,
+
+            currentMonth: '',
+            dates: null,
+            filteredDates: null,
+            startDates: [],
+            chartDataset: [],
+
+            loaded: true
           };
       },
 
@@ -93,13 +116,22 @@
           //Get All Transactions This Month
           this.getFilteredTransactionList(this.getMonthStartDate(), this.getCurrentDateEnd(), 'month');
         });
-
-        promise.then(() => {
-            this.ifReady = true;
-        });
       },
 
       computed:{
+        chartdata: function() {
+          return {
+            labels: this.filteredDates,
+            datasets: [
+              {
+                label: 'Sales For This Day',
+                backgroundColor: '#03254c',
+                data: this.chartDataset
+              }
+            ]
+          }
+        },
+
         total_sales_today: function () {
           if (this.totalTransactions){
             return this.totalTransactions.reduce((totalAmount, transaction_item) => {
@@ -144,6 +176,7 @@
                   break;
                 case 'month':
                   this.totalMonthTransactions = res.data.transaction;
+                  this.generateMonthlyStatistics();
                   break;
               }
               
@@ -154,7 +187,7 @@
         },
 
         getCurrentDateStart(){
-          return this.formatToISODate(new Date());
+          return this.formatDate(new Date(), true);
         },
 
         getWeekStartDate() {
@@ -167,14 +200,14 @@
           var x = new Date(date.getTime() - userTimezoneOffset);
           var firstDay = new Date(x.toDateString())
 
-          return this.formatToISODate(firstDay)
+          return this.formatDate(firstDay, true)
         },
 
         getMonthStartDate(){
           var date = new Date();
           var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
 
-          return this.formatToISODate(firstDay)
+          return this.formatDate(firstDay, true)
         },
 
         getCurrentDateEnd(){
@@ -184,7 +217,7 @@
           return localISOTime;
         },
 
-        formatToISODate(date){
+        formatDate(date, isIso, isEnd = false){
           var today = date;
           var dd = today.getDate();
           var mm = today.getMonth()+1;
@@ -193,7 +226,42 @@
           if(dd<10) dd='0'+dd;
           if(mm<10) mm='0'+mm;
 
-          return (yyyy+'-'+mm+'-'+dd+'T00:00:00');
+          if(isIso){
+            if(isEnd){
+              return (yyyy+'-'+mm+'-'+dd+'T23:59:59');
+            }
+            return (yyyy+'-'+mm+'-'+dd+'T00:00:00');
+          }
+          return (yyyy+'-'+mm+'-'+dd);
+        },
+
+        generateMonthlyStatistics(){
+          const monthNames = ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December"
+                ];
+                
+          var monthTransaction = this.totalMonthTransactions;
+
+          this.dates = monthTransaction.map(function (e) {
+            return new Date(e.created_at);
+          });
+
+          for (var i = 0; i < this.dates.length; i++) {
+            this.dates[i] = this.formatDate(this.dates[i], false)
+          }
+
+          this.filteredDates = this.dates.filter((item, index) => {
+            return this.dates.indexOf(item) === index;
+          })
+
+          for (var i = 0; i < this.filteredDates.length; i++) {
+            this.startDates[i] = this.formatDate(new Date(this.filteredDates[i]), false)
+            this.chartDataset[i] = monthTransaction.filter(({created_at}) => this.formatDate(new Date(created_at), false) == this.startDates[i])
+                                                   .reduce((sum, transaction_item) => {
+                                                     return sum += parseFloat(transaction_item.grand_total_amount);
+                                                    }, 0);
+          }   
+          this.currentMonth = monthNames[new Date(this.dates[0]).getMonth()];
         }
       },
     }
