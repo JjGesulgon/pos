@@ -217,7 +217,7 @@
           return localISOTime;
         },
 
-        formatDate(date, isIso, isEnd = false){
+        formatDate(date, isIso){
           var today = date;
           var dd = today.getDate();
           var mm = today.getMonth()+1;
@@ -227,9 +227,6 @@
           if(mm<10) mm='0'+mm;
 
           if(isIso){
-            if(isEnd){
-              return (yyyy+'-'+mm+'-'+dd+'T23:59:59');
-            }
             return (yyyy+'-'+mm+'-'+dd+'T00:00:00');
           }
           return (yyyy+'-'+mm+'-'+dd);

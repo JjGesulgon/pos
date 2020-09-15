@@ -39,14 +39,12 @@ class TransactionRepository extends Repository
     }
 
     /**
-     * Get the transaction with transaction items with items
+     * Get the transaction filtered by date range
      *
      * @return array json object
      */
     public function getTotalTransaction($request)
-    {
-        // $transaction = $this->transaction::with('transactionItems.item')->findOrFail($id);
-        
+    {        
         $transaction = $this->transaction
                             ->whereBetween('created_at', [$request->startDate, $request->endDate])
                             ->get();
