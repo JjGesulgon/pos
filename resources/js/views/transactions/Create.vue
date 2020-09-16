@@ -2,12 +2,14 @@
     <div>
         <breadcrumbs :routePrefixName="routePrefixName" :action="action" :singularName="singularName" :pluralName="pluralName" :useName="useName"></breadcrumbs>
 
-        <div class="card" style="height: calc(100% - -63px);">
-        <div class="card-body">
-            <form-title :routePrefixName="routePrefixName" :title="title" v-bind:showRightSide="false"></form-title>
-            <br>
-            <div class="row">
-                <div class="col-md-6 form-group">
+        <div class="card">
+            <div class="card-body">
+                <form-title :routePrefixName="routePrefixName" :title="title" v-bind:showRightSide="false"></form-title>
+                <br>
+                <form-create :apiPath="apiPath" :routePrefixName="routePrefixName" :singularName="singularName" :toastMessage="toastMessage" :fieldColumns="getFieldColumns()">
+                    <template v-bind:data="$data">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
                     <label for="from">
                         From
                         &nbsp;
@@ -25,7 +27,7 @@
                         </div>
                     </label>
                     <div class="input-group">
-                        <search apiPath="/api/branches/search" idAttribute="from" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Branches" v-show="from_selected_radio_button === 'branch'" @SelectOption="selectFromBranch($event)"></search>
+                        <search apiPath="/api/branches/search" idAttribute="from" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Branches" v-show="from_selected_radio_button === 'branch'" :selectedObject="branch" @SelectOption="selectFromBranch($event)"></search>
                         <search apiPath="/api/warehouses/search" idAttribute="from" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Warehouses" v-show="from_selected_radio_button === 'warehouse'" @SelectOption="selectFromWarehouse($event)"></search>
                         <div class="input-group-prepend">
                             <div class="input-group-text">Number Slip</div>
@@ -36,437 +38,235 @@
                 <div class="col-md-6 form-group">
                     <label id="contact">Contact</label>
                     <div class="input-group">
-                        <search apiPath="/api/contacts/search" idAttribute="contact" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Contacts" @SelectOption="selectContact($event)"></search>
+                        <search apiPath="/api/contacts/search" idAttribute="contact" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Contacts" :selectedObject="contact" @SelectOption="selectContact($event)"></search>
                         <div class="input-group-prepend">
                             <div class="input-group-text">Reference Number</div>
                         </div>
                         <input id="reference-number" type="text" class="form-control" v-model="$data.reference_number" readonly required/>
                     </div>
                 </div>
-                    <!-- <div class="col-md-6 form-group">
-                        <label for="number">Number Slip</label>
-                        <input id="number" type="text" class="form-control" v-model="$data.number" readonly required/>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label for="reference-number">Reference Number</label>
-                        <input id="reference-number" type="text" class="form-control" v-model="$data.reference_number" readonly required/>
-                    </div> -->
-                </div>
-
-                <br />
-
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="discountableSwitch" @change="toggleIfDiscountable()">
-                            <label class="custom-control-label" for="discountableSwitch">Check if Discountable</label>
                         </div>
 
-                        <br v-if="is_discountable">
-
-                        <div class="row" v-if="is_discountable">
-                            <div class="col-2">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="default-discount" class="custom-control-input" v-model="discount_type" value="Total">
-                                    <label class="custom-control-label" for="default-discount">Total</label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="item-discount" class="custom-control-input" v-model="discount_type" value="Per Item">
-                                    <label class="custom-control-label" for="item-discount">Per Item</label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="brand-discount" class="custom-control-input" v-model="discount_type" value="Per Brand">
-                                    <label class="custom-control-label" for="brand-discount">Per Brand</label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="mixed-discount" class="custom-control-input" v-model="discount_type" value="Mixed">
-                                    <label class="custom-control-label" for="mixed-discount">Mixed</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="input-group" v-if="is_discountable">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text" id="btnGroupAddon">Discount %</div>
-                                    </div>
-                                    <input type="number" class="form-control" min="0" max="100" v-model="discount_percent">
-                                </div>
-                            </div>
-
-                            <br v-if="is_discountable">
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="taxable-switch" :checked="is_taxable" @change="toggleIfTaxable()">
-                                    <label class="custom-control-label" for="taxable-switch">Check if Taxable</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div v-if="is_taxable" class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="is-tax-inclusive" :checked="is_tax_inclusive" @change="toggleIsTaxInclusive()">
-                                    <label class="custom-control-label" for="is-tax-inclusive">Is Tax Inclusive (Included)</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <br v-if="is_taxable">
-
-                        <div class="row" v-if="is_taxable">
-                            <div class="col">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="default-tax" class="custom-control-input" v-model="tax_type" value="Total">
-                                    <label class="custom-control-label" for="default-tax">Total</label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="item-tax" class="custom-control-input" v-model="tax_type" value="Per Item">
-                                    <label class="custom-control-label" for="item-tax">Per Item</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="input-group" v-if="is_taxable && (tax_type == 'Total' || tax_type == 'Mixed')">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text" id="btnGroupAddon">Tax %</div>
-                                    </div>
-                                    <input type="number" class="form-control" min="0" max="100" v-model="tax_percent">
-                                </div>
-                            </div>
-                        </div>
-
-                        <br v-if="is_taxable">
-                    </div>
-                </div>
-
-                <!-- <table class="table table-hover table-sm card-title">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Measuring Mass</th>
-                            <th scope="col">Unit of Measurement</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Sub Total Amount</th>
-                            <th scope="col">Options</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="cart">
-                        <tr v-for="item in cart" :key="item.id">
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.sales_item_prices[0].measuring_mass.mass }}</td>
-                            <td>{{ item.sales_item_prices[0].unit_of_measurement.abbreviation }}</td>
-                            <td>{{ item.amount }}</td>
-                            <td>
-                                <input type="number" id="qty" name="quantity" v-model="item.qty" v-bind:max="item.stocks_available"/>
-                            </td>
-                            <td>{{ (item.qty * item.amount).toFixed(2) }}</td>
-                            <td>
-                                <label class="text-danger clickableText" @click.prevent="removeFromCart(item)">
-                                    <i class="fas fa-trash-alt"></i>&nbsp;
-                                    <strong>Remove</strong>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr v-if="priceSummation() != 0">
-                            <td scope="row" colspan="5">
-                                <br />
-                            </td>
-                        </tr>
-                        <tr v-if="priceSummation() != 0">
-                            <td scope="row" colspan="4"></td>
-                        </tr>
-                        <tr class="no-border" v-if="priceSummation() != 0">
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <strong>Total Bill:</strong>
-                                {{ priceSummation() }}
-                            </td>
-                        </tr>
-                        <tr class="no-border" v-if="priceSummation() != 0">
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <strong>Cash:</strong>
-                                <input type="number" id="cash" name="cash" v-model="cash" />
-                            </td>
-                        </tr>
-                        <tr class="no-border" v-if="priceSummation() != 0">
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <strong>Change:</strong>
-                                {{ (this.cash - priceSummation()).toFixed(2)}}
-                            </td>
-                        </tr>
-                        <tr class="no-border" v-if="priceSummation() != 0">
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <button type="button" class="btn btn-success btn-sm" @click.prevent="openCheckoutModal()">
-                                    <i class="fas fa-cash-register"></i>&nbsp;
-                                    Checkout
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table> -->
-                <table class="table table-hover table-sm">
-                    <caption>List of Transaction Items</caption>
-                    <thead class="thead-light">
-                        <tr>
-                            <th width="20%" scope="col">Item</th>
-                            <th width="12%" scope="col">Measuring Mass</th>
-                            <th width="13%" scope="col">Unit of Measurement</th>
-                            <th width="12%" scope="col">Price</th>
-                            <th width="10%" scope="col">Quantity</th>
-                            <th width="10%" scope="col">Sub Total Amount</th>
-                            <th scope="col" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="item-discount-all">
-                                    <label class="custom-control-label" for="item-discount-all">Item Discount</label>
-                                </div>
-                            </th>
-                            <th scope="col" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="brand-discount-all">
-                                    <label class="custom-control-label" for="brand-discount-all">Brand Discount</label>
-                                </div>
-                            </th>
-                            <th scope="col" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="tax-all">
-                                    <label class="custom-control-label" for="tax-all">Tax</label>
-                                </div>
-                            </th>
-                            <th width="10%" scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr :id="transaction_item.id" :key="transaction_item.id" v-for="(transaction_item, index) in transaction_items">
-                            <td>
-                                <search :idAttribute="index" apiPath="/api/items/search-for-sales" styleClass="form-control" labelAttribute="name_identifier" searchColumn="name" placeholder="Search Items" @SelectOption="selectItem($event, index)"></search>
-                            </td>
-                            <td>
-                                <input class="form-control" v-model="transaction_item.measuringMass.mass" required readonly>
-                            </td>
-                            <td>
-                                <input class="form-control" v-model="transaction_item.unitOfMeasurement.display_name" required readonly>
-                            </td>
-                            <td>
-                                <input class="form-control" v-model="transaction_item.quantity" required readonly>
-                            </td>
-                            <td>
-                                <input class="form-control" v-model.number="transaction_item.quantity" required>
-                            </td>
-                            <td>{{ sub_total_amount[index] | Decimal }}</td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" :id="'item_discount_' + index" @click="calculateItemDiscount(index)">
-                                    <label class="custom-control-label" :for="'item_discount_' + index">
-                                        {{ transaction_item.item_discount_amount }}
-                                    </label>
-                                </div>
-                            </td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" :id="'brand_discount_' + index" @click="calculateBrandDiscount(index)">
-                                    <label class="custom-control-label" :for="'brand_discount_' + index"></label>
-                                </div>
-                            </td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" :id="'tax_' + index" @click="calculateItemTax(index)">
-                                    <label class="custom-control-label" :for="'tax_' + index"></label>
-                                </div>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" @click="removeQuotationItem(index)"><i class="far fa-times-circle"></i>&nbsp; Remove Item</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row" colspan="6">&nbsp;</td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">&nbsp;</td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">&nbsp;</td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">&nbsp;</td>
-                            <td scope="row" colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <b>Total Amount</b>
-                            </td>
-                            <td scope="row"><strong>{{ total_amount | Decimal }}</strong></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
-                            <td scope="row" colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <b>Discount Amount</b>
-                            </td>
-                            <td scope="row"><strong>{{ discount_amount | Decimal  }}</strong></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
-                            <td scope="row" colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <b>Tax Amount</b>
-                            </td>
-                            <td scope="row"><strong>{{ tax_amount | Decimal }}</strong></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
-                            <td scope="row" colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td scope="row" colspan="4"></td>
-                            <td scope="row">
-                                <b>Grand Total Amount</b>
-                            </td>
-                            <td scope="row"><strong>{{ grand_total_amount | Decimal }}</strong></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
-                            <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
-                            <td scope="row" colspan="1"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <div id="snackbar" class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">Search Item</div>
-                                    </div>
-                                    <input type="text" class="form-control" v-model="itemName" @input="onSearch" placeholder="Search Item"/>
-                                </div>
-                            </div>
-                        </div>
                         <br>
-                        <table class="table table-hover table-sm">
-                            <caption>
-                                <div class="row">
-                                    <div class="col-md-9">List of Items</div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="discountableSwitch" @change="toggleIfDiscountable()">
+                                    <label class="custom-control-label" for="discountableSwitch">Check if Discountable</label>
+                                </div>
+
+                                <br v-if="is_discountable">
+
+                                <div class="row" v-if="is_discountable">
+                                    <div class="col-2">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="default-discount" class="custom-control-input" v-model="discount_type" value="Total">
+                                            <label class="custom-control-label" for="default-discount">Total</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="item-discount" class="custom-control-input" v-model="discount_type" value="Per Item">
+                                            <label class="custom-control-label" for="item-discount">Per Item</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="brand-discount" class="custom-control-input" v-model="discount_type" value="Per Brand">
+                                            <label class="custom-control-label" for="brand-discount">Per Brand</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="mixed-discount" class="custom-control-input" v-model="discount_type" value="Mixed">
+                                            <label class="custom-control-label" for="mixed-discount">Mixed</label>
+                                        </div>
+                                    </div>
                                     <div class="col-md-3">
-                                        <div class="progress" height="30px;" v-if="showProgress">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+                                        <div class="input-group" v-if="is_discountable">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text" id="btnGroupAddon">Discount %</div>
+                                            </div>
+                                            <input type="number" class="form-control" min="0" max="100" v-model="discount_percent">
+                                        </div>
+                                    </div>
+
+                                    <br v-if="is_discountable">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="taxable-switch" :checked="is_taxable" @change="toggleIfTaxable()">
+                                            <label class="custom-control-label" for="taxable-switch">Check if Taxable</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div v-if="is_taxable" class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="is-tax-inclusive" :checked="is_tax_inclusive" @change="toggleIsTaxInclusive()">
+                                            <label class="custom-control-label" for="is-tax-inclusive">Is Tax Inclusive (Included)</label>
                                         </div>
                                     </div>
                                 </div>
-                            </caption>
+
+                                <br v-if="is_taxable">
+
+                                <div class="row" v-if="is_taxable">
+                                    <div class="col">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="default-tax" class="custom-control-input" v-model="tax_type" value="Total">
+                                            <label class="custom-control-label" for="default-tax">Total</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="item-tax" class="custom-control-input" v-model="tax_type" value="Per Item">
+                                            <label class="custom-control-label" for="item-tax">Per Item</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group" v-if="is_taxable && (tax_type == 'Total' || tax_type == 'Mixed')">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text" id="btnGroupAddon">Tax %</div>
+                                            </div>
+                                            <input type="number" class="form-control" min="0" max="100" v-model="tax_percent">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <br v-if="is_taxable">
+                            </div>
+                        </div>
+
+                        <table class="table table-hover table-sm">
+                            <caption>List of Quotation Items</caption>
                             <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">Brand Name</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Measuring Mass</th>
-                                    <th scope="col">Unit Of Measurement</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Options</th>
+                                    <th width="13%" scope="col">Stock Keeping Unit</th>
+                                    <th width="20%" scope="col">Item</th>
+                                    <th width="12%" scope="col">Measuring Mass</th>
+                                    <th width="13%" scope="col">Unit of Measurement</th>
+                                    <th width="12%" scope="col">Price</th>
+                                    <th width="10%" scope="col">Quantity</th>
+                                    <th width="10%" scope="col">Sub Total Amount</th>
+                                    <th scope="col" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">
+                                        Item Discount
+                                    </th>
+                                    <th scope="col" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">
+                                        Brand Discount
+                                    </th>
+                                    <th scope="col" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">
+                                        Tax
+                                    </th>
+                                    <th width="10%" scope="col">Action</th>
                                 </tr>
                             </thead>
-                            <tbody v-if="items">
-                                <tr v-for="item in items" :key="item.id">
-                                    <td>{{ item.brand.display_name }}</td>
-                                    <td>{{ item.name_identifier }}</td>
-                                    <td>{{ item.sales_item_prices[0].measuring_mass.mass }}</td>
-                                    <td>{{ item.sales_item_prices[0].unit_of_measurement.abbreviation }}</td>
-                                    <td v-if="item.default_sales_item_price">{{ item.default_sales_item_price.price }}</td>
-                                    <td v-else>{{ item.sales_item_prices[0].price }}</td>
+                            <tbody>
+                                <tr :id="transaction_item.id" :key="transaction_item.id" v-for="(transaction_item, index) in transaction_items">
+                                    <td>{{ transaction_item.item.stock_keeping_unit }}</td>
                                     <td>
-                                        <div v-if="item.stocks_available != 0">
-                                            <label class="text-secondary clickableText" @click.prevent="addToCart(item)">
-                                                <i class="fas fa-cart-arrow-down"></i>&nbsp;
-                                                <strong>Add to Cart</strong>
-                                            </label>
-                                        </div>
-                                        <div v-else>
-                                            <label class="text-danger">
-                                                <i class="fas fa-exclamation-circle"></i>&nbsp;
-                                                <strong>Not Available</strong>
+                                        <search :idAttribute="index" apiPath="/api/items/search-for-sales" styleClass="form-control" labelAttribute="name_identifier" searchColumn="name" placeholder="Search Items" @SelectOption="selectItem($event, index)"></search>
+                                    </td>
+                                    <td>
+                                        <search idAttribute="measuring-mass" apiPath="/api/measuring-mass/search" styleClass="form-control" labelAttribute="mass" searchColumn="mass" placeholder="Search Measuring Mass" :selectedObject="transaction_item.measuringMass" @SelectOption="selectMeasuringMass($event, index)"></search>
+                                    </td>
+                                    <td>
+                                        <search idAttribute="unit-of-measurement" apiPath="/api/unit-of-measurements/search" styleClass="form-control" labelAttribute="name" searchColumn="name" placeholder="Search Unit of Measurements" :selectedObject="transaction_item.unitOfMeasurement" @SelectOption="selectUnitOfMeasurement($event, index)"></search>
+                                    </td>
+                                    <td>
+                                        <search idAttribute="sales-item-price" apiPath="/api/sales-item-prices/search" styleClass="form-control" labelAttribute="price" searchColumn="price" placeholder="Search Sales Item Prices" :selectedObject="transaction_item.salesItemPrice" :additionalParameters="additionalParametersForSearchingSalesItemPrices(index)" @SelectOption="selectSalesItemPrice($event, index)"></search>
+                                    </td>
+                                    <td>
+                                        <input class="form-control" v-model.number="transaction_item.quantity" required>
+                                    </td>
+                                    <td>{{ sub_total_amount[index] | Decimal }}</td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" :id="'item_discount_' + index" v-model="transaction_item.enable_individual_item_discount" @click="enableIndividualItemDiscount(index)">
+                                            <label class="custom-control-label" :for="'item_discount_' + index">
+                                                {{ transaction_item.item_discount_amount }}
                                             </label>
                                         </div>
                                     </td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" :id="'brand_discount_' + index" @click="enableIndividualBrandDiscount(index)">
+                                            <label class="custom-control-label" :for="'brand_discount_' + index"></label>
+                                        </div>
+                                    </td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" :id="'tax_' + index" @click="enableIndividualTaxDiscount(index)">
+                                            <label class="custom-control-label" :for="'tax_' + index"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" @click="removeItem(index)"><i class="far fa-times-circle"></i>&nbsp; Remove Item</button>
+                                    </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
-        <div class="modal fade" id="checkout-modal" tabindex="-1" role="dialog" aria-labelledby="checkout" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="search">Confirm Payment</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-hover table-sm card-title">
-                            <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">qty</th>
-                                    <th scope="col">Total Price</th>
+                                    <td scope="row" colspan="7">&nbsp;</td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')">&nbsp;</td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')">&nbsp;</td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')">&nbsp;</td>
+                                    <td scope="row" colspan="1"></td>
                                 </tr>
-                            </thead>
-                            <tbody v-if="cart">
-                                <tr v-for="item in cart" :key="item.id">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.amount }}</td>
-                                    <td>{{ item.qty }}</td>
-                                    <td>{{ (item.qty * item.amount).toFixed(2) }}</td>
+                                <tr>
+                                    <td scope="row" colspan="5"></td>
+                                    <td scope="row">
+                                        <b>Total Amount</b>
+                                    </td>
+                                    <td scope="row"><strong>{{ total_amount | Decimal }}</strong></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
+                                    <td scope="row" colspan="1"></td>
+                                </tr>
+                                <tr>
+                                    <td scope="row" colspan="5"></td>
+                                    <td scope="row">
+                                        <b>Discount Amount</b>
+                                    </td>
+                                    <td scope="row"><strong>{{ discount_amount | Decimal }}</strong></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
+                                    <td scope="row" colspan="1"></td>
+                                </tr>
+                                <tr>
+                                    <td scope="row" colspan="5"></td>
+                                    <td scope="row">
+                                        <b>Tax Amount</b>
+                                    </td>
+                                    <td scope="row"><strong>{{ tax_amount | Decimal }}</strong></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
+                                    <td scope="row" colspan="1"></td>
+                                </tr>
+                                <tr>
+                                    <td scope="row" colspan="5"></td>
+                                    <td scope="row">
+                                        <b>Grand Total Amount</b>
+                                    </td>
+                                    <td scope="row"><strong>{{ grand_total_amount | Decimal }}</strong></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Item' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_discountable && (discount_type == 'Per Brand' || discount_type == 'Mixed')"></td>
+                                    <td scope="row" v-if="is_taxable && (tax_type == 'Per Item' || tax_type == 'Mixed')"></td>
+                                    <td scope="row" colspan="1"></td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="card-text">
-                            <br />
-                            <br />
-                            <div class="float-right">
-                                <div>
-                                    <strong>Total Bill:</strong>
-                                    {{ priceSummation() }}
-                                </div>
-                                <div>
-                                    <strong>Cash:</strong>
-                                    <input type="number" id="cash" name="cash" v-model="cash" disabled />
-                                </div>
-                                <div>
-                                    <strong>Change:</strong>
-                                    {{ (this.cash - priceSummation()).toFixed(2)}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container mb-4" v-if="this.ifReady">
-                        <div class="progress" height="30px;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer" v-else>
-                        <button type="button" class="btn btn-success btn-sm" @click.prevent="createNewTransaction()">Proceed</button>
-                    </div>
-                </div>
+                    </template>
+
+                    <template v-slot:other-buttons v-bind:addTransactionItem="addTransactionItem" v-bind:ifReady="ifReady">
+                        <button type="button" class="btn btn-primary btn-sm" v-if="ifReady" @click="addTransactionItem"><i class="fas fa-plus-circle"></i>&nbsp; Add New Item</button>
+                    </template>
+                </form-create>
             </div>
         </div>
     </div>
@@ -487,9 +287,17 @@
                 toastMessage:               'Transaction',
                 from_selected_radio_button: 'branch',
                 isDisabled:                 true,
-                contact_id:                 null,
-                transactionable_from_id :   null,
-                transactionable_from_type:  null,
+                contact: {
+                    id: 1,
+                    name: 'Guest'
+                },
+                contact_id:                 1,
+                branch: {
+                    id: 1,
+                    name: 'PDLPharmacy Circumferencial Road'
+                },
+                transactionable_from_id :          1,
+                transactionable_from_type:         'App\\Branch',
                 number:                     null,
                 reference_number:           null,
                 is_discountable:            false,
@@ -499,19 +307,21 @@
                 is_tax_inclusive:           true,
                 tax_type:                   'Total',
                 tax_percent:                12,
-                items:                      null,
-                cart:                       [],
                 transaction_items: [
                     {
-                        item:                   '',
-                        item_id:                '',
-                        measuringMass:          '',
-                        measuring_mass_id:      '',
-                        unitOfMeasurement:      '',
-                        unit_of_measurement_id: '',
-                        salesItemPrice:         '',
-                        sales_item_price_id:    '',
-                        quantity:               ''
+                        item:                            '',
+                        item_id:                         '',
+                        measuringMass:                   '',
+                        measuring_mass_id:               '',
+                        unitOfMeasurement:               '',
+                        unit_of_measurement_id:          '',
+                        salesItemPrice:                  '',
+                        sales_item_price_id:             '',
+                        quantity:                        '',
+                        item_discounts:                  [],
+                        brand_discounts:                 [],
+                        sub_total_amount:                '',
+                        enable_individual_item_discount: false
                     }
                 ]
             };
@@ -525,18 +335,26 @@
             Broadcast.$on("NewTransactionReferenceNumberGenerated", (event) => {
                 this.reference_number = event.referenceNumber;
             });
+
+            this.number  = 'Generating New Number Slip';
+            this.$generate.number('transaction', { branch_id: this.branch.id });
+
+            this.reference_number = 'Generating New Reference Number';
+            this.$generate.referenceNumber("transaction", { contact_id: this.contact.id });
         },
 
-        watch: {
-            isShow: function (val) {
-                this.showItemList(val)
-            },
+        filters: {
+            Decimal: function (value) {
+                if (value) {
+                    return value.toFixed(2);
+                }
+            }
         },
 
         computed: {
             sub_total_amount: function() {
                 return this.transaction_items.map((transaction_item) => {
-                    return (transaction_item.quantity * transaction_item.salesItemPrice.price);
+                    return transaction_item.sub_total_amount = (transaction_item.quantity * transaction_item.salesItemPrice.price);
                 });
             },
             total_amount: function () {
@@ -600,33 +418,161 @@
         },
 
         methods: {
-            selectContact(contact) {
-                if (typeof contact === "object") {
-                    this.reference_number = "Generating New Reference Number";
-                    this.contact_id = contact.id;
+            getFieldColumns() {
+                let transactionItems = [];
 
-                    this.$generate.referenceNumber("transaction", {
-                        contact_id: contact.id,
+                this.transaction_items.forEach(transaction_item => {
+                    transactionItems.push({
+                        item_id:                transaction_item.item_id,
+                        measuring_mass_id:      transaction_item.measuring_mass_id,
+                        unit_of_measurement_id: transaction_item.unit_of_measurement_id,
+                        sales_item_price_id:    transaction_item.sales_item_price_id,
+                        quantity:               transaction_item.quantity
                     });
+                });
+
+                let formData = {
+                    contact_id:         this.contact_id,
+                    transactionable_from_id:   this.transactionable_from_id,
+                    transactionable_from_type: this.transactionable_from_type,
+                    number:             this.number,
+                    reference_number:   this.reference_number,
+                    total_amount:       this.total_amount,
+                    grand_total_amount: this.grand_total_amount,
+                    transaction_items:    transactionItems
+                };
+
+                let discountType;
+                let taxType;
+
+                if (this.is_discountable) {
+                    if (this.discount_type == 'Total') {
+                        discountType = 1;
+                    } else if (this.discount_type == 'Per Item') {
+                        discountType = 2;
+                    } else if (this.discount_type == 'Per Brand') {
+                        discountType = 3;
+                    } else {
+                        discountType = 4;
+                    }
+
+                    formData.is_discountable  = this.is_discountable;
+                    formData.discount_type    = discountType;
+                    formData.discount_percent = this.discount_percent;
+                    formData.discount_amount  = this.discount_amount;
+                }
+
+                if (this.is_taxable) {
+                    if (this.tax_type == 'Total') {
+                        taxType = 1;
+                    } else if (this.tax_type == 'Per Item') {
+                        taxType = 2;
+                    } else if (this.tax_type == 'Per Brand') {
+                        taxType = 3;
+                    } else {
+                        taxType = 4;
+                    }
+
+                    formData.is_taxable       = this.is_taxable;
+                    formData.is_tax_inclusive = this.is_tax_inclusive;
+                    formData.tax_type         = taxType;
+                    formData.tax_percent      = this.tax_percent;
+                    formData.tax_amount       = this.tax_amount;
+                }
+
+                return formData;
+            },
+            selectContact(contact) {
+                if (typeof contact === 'object') {
+                    this.reference_number = 'Generating New Reference Number';
+                    this.contact          = contact;
+                    this.contact_id       = contact.id;
+
+                    this.$generate.referenceNumber("transaction", { contact_id: contact.id });
                 }
             },
             selectFromWarehouse(warehouse) {
-                if (typeof warehouse === "object") {
-                    this.transactionable_from_id = warehouse.id;
+                if (typeof warehouse === 'object') {
+                    this.transactionable_from_id   = warehouse.id;
                     this.transactionable_from_type = "App\\Warehouse";
-                    this.number = "Generating New Number Slip";
+                    this.number                    = 'Generating New Number Slip';
 
                     this.$generate.number("transaction", { warehouse_id: warehouse.id });
                 }
             },
             selectFromBranch(branch) {
-                if (typeof branch === "object") {
-                    this.transactionable_from_id = branch.id;
+                if (typeof branch === 'object') {
+                    this.branch                    = branch;
+                    this.transactionable_from_id   = branch.id;
                     this.transactionable_from_type = "App\\Branch";
-                    this.number = "Generating New Number Slip";
+                    this.number                    = 'Generating New Number Slip';
 
-                    this.$generate.number("transaction", { branch_id: branch.id });
+                    this.$generate.number('transaction', { branch_id: branch.id });
                 }
+            },
+            selectItem(item, index) {
+                this.transaction_items[index].item                   = item;
+                this.transaction_items[index].item_id                = item.id;
+                this.transaction_items[index].measuringMass          = item.default_sales_item_price.measuring_mass;
+                this.transaction_items[index].measuring_mass_id      = item.default_sales_item_price.measuring_mass.id;
+                this.transaction_items[index].unitOfMeasurement      = item.default_sales_item_price.unit_of_measurement;
+                this.transaction_items[index].unit_of_measurement_id = item.default_sales_item_price.unit_of_measurement.id;
+                this.transaction_items[index].salesItemPrice         = item.default_sales_item_price;
+                this.transaction_items[index].sales_item_price_id    = item.default_sales_item_price_id;
+            },
+            selectMeasuringMass(measuringMass, index) {
+                this.transaction_items[index].measuringMass     = measuringMass;
+                this.transaction_items[index].measuring_mass_id = measuringMass.id;
+            },
+            selectUnitOfMeasurement(unitOfMeasurement, index) {
+                this.transaction_items[index].unitOfMeasurement      = unitOfMeasurement;
+                this.transaction_items[index].unit_of_measurement_id = unitOfMeasurement.id;
+            },
+            additionalParametersForSearchingSalesItemPrices(index) {
+                if (typeof this.transaction_items[index].item === 'object') {
+                    return {
+                        item_id:                this.transaction_items[index].item_id,
+                        measuring_mass_id:      this.transaction_items[index].measuring_mass_id,
+                        unit_of_measurement_id: this.transaction_items[index].unit_of_measurement_id,
+                        is_strict:              'true'
+                    };
+                }
+            },
+            selectSalesItemPrice(salesItemPrice, index) {
+                this.transaction_items[index].salesItemPrice      = salesItemPrice;
+                this.transaction_items[index].sales_item_price_id = salesItemPrice.id;
+            },
+            selectPurchaseOrderItem(index) {
+                if (this.transaction_items[index].item instanceof Object) {
+                    this.transaction_items[index].item_id                = this.transaction_items[index].item.id;
+                    this.transaction_items[index].unitOfMeasurement      = this.transaction_items[index].item.default_unit_of_measurement.name;
+                    this.transaction_items[index].unit_of_measurement_id = this.transaction_items[index].item.default_unit_of_measurement.id;
+                }
+            },
+            selectPurchaseOrderPrice(index) {
+                if (this.transaction_items[index].item instanceof Object) {
+                    this.transaction_items[index].sales_item_price_id = this.transaction_items[index].salesItemPrice.id;
+                }
+            },
+            addTransactionItem() {
+                this.transaction_items.push({
+                    item:                            '',
+                    item_id:                         '',
+                    measuringMass:                   '',
+                    measuring_mass_id:               '',
+                    unitOfMeasurement:               '',
+                    unit_of_measurement_id:          '',
+                    salesItemPrice:                  '',
+                    sales_item_price_id:             '',
+                    item_discounts:                  [],
+                    brand_discounts:                 [],
+                    quantity:                        '',
+                    sub_total_amount:                '',
+                    enable_individual_item_discount: false
+                });
+            },
+            removeItem(index) {
+                this.transaction_items.splice(index, 1);
             },
             toggleIfDiscountable() {
                 if (this.is_discountable) {
@@ -649,142 +595,81 @@
                     this.is_tax_inclusive = true;
                 }
             },
+            enableIndividualItemDiscount(index) {
+                if (typeof this.transaction_items[index].item === 'object') {
+                    if (this.transaction_items[index].enable_individual_item_discount) {
+                        this.transaction_items[index].enable_individual_item_discount = false;
+                    } else {
+                        this.transaction_items[index].enable_individual_item_discount = true;
+                    }
 
-            showItemList(isShow) {
-                var el = document.getElementById("snackbar");
-                isShow ? el.className = "show" : el.className = ""
-            },
-            onSearch() {
-                this.search(this.itemName, this);
-            },
-            search: _.debounce((itemName, vm) => {
-                axios
-                .get("/api/items/search-for-sales", {
-                    params: {
-                        name: itemName,
-                        identifier: itemName,
-                        name_from_item_type: itemName,
-                        name_from_brand: itemName,
-                    },
-                })
-                .then((res) => {
-                    vm.items = res.data;
-                });
-            }, 250),
-            clear() {
-                this.name = "";
-                this.amount = "";
-                this.order_by = "desc";
-            },
-            openSearchModal() {
-                $("#search-modal").modal("show");
-            },
-            openCheckoutModal() {
-                if (parseInt(this.cash).toFixed(2) - this.priceSummation() < 0) {
-                    alert("Insufficient Funds");
-                } else {
-                    $("#checkout-modal").modal("show");
-                }
-            },
-            addToCart(item) {
-                const found = this.cart.some((el) => el.id === item.id);
-                if (!found) {
-                    var cartItem = {
-                        id: item.id,
-                        name: item.name,
-                        amount: item.default_sales_item_price
-                        ? item.default_sales_item_price
-                        : item.sales_item_prices[0].price,
-                        stocks_available: item.stock_keeping_unit,
-                        qty: 1,
-                    };
-                    this.cart.push(cartItem);
-                    console.log(this.cart);
-                } else {
-                    alert("Item already exists in cart");
-                }
-            },
-            priceSummation() {
-                var total = 0;
-                this.cart.forEach((el) => {
-                    total += el.amount * el.qty;
-                });
-                return total.toFixed(2);
-            },
-            removeFromCart(item) {
-                this.cart.splice(
-                    this.cart.findIndex((x) => (x.id = item.id)),
-                    1
-                    );
-            },
-            createNewTransaction() {
-                if (parseInt(this.cash).toFixed(2) - this.priceSummation() < 0) {
-                    alert("Insufficient Funds");
-                } else {
-                    this.ifReady = true;
-                    var transaction = {
-                        total_amount: this.priceSummation(),
-                        cart: this.cart,
-                    };
+                    let totalDiscountedAmount = 0;
+                    let remainder             = null;
+                    let transactionItem         = this.transaction_items[index];
+                    let itemDiscounts         = [];
+                    let temporaryQuantity     = transactionItem.quantity;
 
-                    axios.post("/api/transactions", transaction).then((res) => {
-                        for (let cartItem = 0; cartItem < this.cart.length; cartItem++) {
-                            let data = {
-                                name: this.cart[cartItem].name,
-                                amount: this.cart[cartItem].amount,
-                                stocks_available:
-                                this.cart[cartItem].stocks_available -
-                                this.cart[cartItem].qty,
-                            };
-
-                            axios.patch("/api/items/" + this.cart[cartItem].id, data).then((res) => {
-                                console.log("Item Update Successful");
-                            }).catch((err) => {
-                                console.log(err);
-                            });
+                    this.transaction_items[index].item.sales_discounts.forEach(sales_discount => {
+                        if (sales_discount.quantity >= 1 && sales_discount.discount >= 1) {
+                            itemDiscounts.push(sales_discount);    
                         }
-
-                        $("#checkout-modal").modal("hide");
-
-                        Broadcast.$emit("ToastMessage", {
-                            message: "Transaction Created Successfully",
-                        });
-
-                        this.cart = [];
-                        this.cash = "";
-
-                        this.$router.go();
-                    })
-                    .catch((err) => {
-                        this.ifReady = true;
-                        console.log(err);
                     });
+
+                    itemDiscounts.reverse();
+
+                    // if (true) {
+                    //     this.transaction_items[index].
+                    // }
+
+                    // if (true) {
+
+                    // }
+
+                    console.log("Item Discounts: ", itemDiscounts);
+
+                    itemDiscounts.forEach((sales_discount, index) => {
+                        if (temporaryQuantity >= sales_discount.quantity && remainder == null) {
+                            remainder = temporaryQuantity % sales_discount.quantity;
+                            let totalQuantity = Math.floor((temporaryQuantity / sales_discount.quantity));
+
+                            for (let i = totalQuantity - 1; i >= 0; i--) {
+                                let totalAmount = sales_discount.quantity * transactionItem.salesItemPrice.price;
+                                totalDiscountedAmount += totalAmount * (sales_discount.discount / 100);
+                            }
+
+                            console.log("First Final Discounted Amount: ", totalDiscountedAmount, " Remainder: ", remainder);
+                            console.log("Grand Total Amount: ", (this.grand_total_amount - totalDiscountedAmount));
+                        } else if (remainder != null && remainder >= sales_discount.quantity) {
+                            console.log("Remainder: ", remainder, " Sales Quantity: ", sales_discount.quantity);
+                            let totalQuantity = Math.floor((remainder / sales_discount.quantity));
+                            remainder = remainder % sales_discount.quantity;
+                            console.log("Remainder: ", remainder);
+                            console.log("Total Rotation for Discount", totalQuantity);
+
+                            for (let i = totalQuantity - 1; i >= 0; i--) {
+                                let totalAmount = sales_discount.quantity * transactionItem.salesItemPrice.price;
+                                console.log("Total Discounted Amount: ", totalAmount);
+                                totalDiscountedAmount += totalAmount * (sales_discount.discount / 100);
+                            }
+
+                            console.log("Succeding Final Discounted Amount: ", totalDiscountedAmount, " Remainder: ", remainder);
+                            console.log("Grand Total Amount: ", (this.grand_total_amount - totalDiscountedAmount));
+                        }
+                    });
+
+                    // console.log("Item Discounts: ", this.transaction_items[index].item.sales_discounts);
+                    // console.log("Brand Discounts: ", this.transaction_items[index].item.brand.sales_discounts);
                 }
             },
-        },
-    };
+            enableIndividualBrandDiscount(index) {
+                console.log('enableIndividualBrandDiscount');
+                console.log(this.transaction_items[index]);
+            },
+            enableIndividualTaxDiscount(index) {
+                console.log('enableIndividualTaxDiscount');
+                console.log(this.transaction_items[index]);
+            }
+        }
+    }
 </script>
 
-<style>
-.clickableText:hover {
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.table > tbody > tr.no-border > td,
-.table > tbody > tr.no-border > th {
-    border-top: none;
-}
-
-#snackbar {
-    position: fixed;
-    bottom: 0;
-    width: calc(100% - 18.2%);
-}
-
-#snackbar.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-    animation: fadein 0.5s;
-}
-</style>

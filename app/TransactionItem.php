@@ -23,9 +23,9 @@ class TransactionItem extends Model
      * @var array
      */
     protected $fillable = [
-        'corporation_id', 'user_id'
-        'transaction_id', 'item_id', 'unit_of_measurement_id',
-        'quantity', 'sales_item_price_id'
+        'corporation_id', 'user_id',
+        'transaction_id', 'item_id', 'measuring_mass_id',
+        'unit_of_measurement_id', 'sales_item_price_id', 'quantity'
     ];
 
     /**
@@ -38,33 +38,30 @@ class TransactionItem extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->user_id = auth('api')->user()->id;
-        });
+            if (request()->headers->get('CORPORATION-ID')) {
+                $model->corporation_id = request()->headers->get('CORPORATION-ID');
+            }
 
-        static::updating(function ($model) {
-            $model->user_id = auth('api')->user()->id;
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
+
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
     }
 
     /**
-    * The transaction item belongs to a user.
-    *
-    * @return object
-    */
-    public function user()
+     * The transaction item belongs to a corporation.
+     *
+     * @return object
+     */
+    public function corporation()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Corporation::class);
     }
-
-    /**
-    * The transaction item belongs to a transaction.
-    *
-    * @return object
-    */
-    public function transactionItem()
-    {
-        return $this->belongsTo(Transaction::class);
-    }
+    
 
     /**
      * The transaction item belongs to an item.
@@ -74,5 +71,55 @@ class TransactionItem extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    /**
+     * The transaction item belongs to a measuring mass.
+     *
+     * @return objct
+     */
+    public function measuringMass()
+    {
+        return $this->belongsTo(MeasuringMass::class);
+    }
+
+    /**
+     * The transaction item belongs to a transaction.
+     *
+     * @return object
+     */
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
+    /**
+     * The transaction item belongs to a sales item price.
+     *
+     * @return object
+     */
+    public function salesItemPrice()
+    {
+        return $this->belongsTo(SalesItemPrice::class);
+    }
+
+    /**
+     * The transaction item belongs to a unit of measurement.
+     *
+     * @return object
+     */
+    public function unitOfMeasurement()
+    {
+        return $this->belongsTo(UnitOfMeasurement::class);
+    }
+
+    /**
+     * The transaction item belongs to a user.
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

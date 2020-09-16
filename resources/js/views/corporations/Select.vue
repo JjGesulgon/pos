@@ -18,11 +18,11 @@
                 <br>
 
                 <div v-if="ifReady">
-                    <form v-on:submit.prevent="selectCorporation()">
+                    <form v-on:submit.prevent="selectCorporation">
                         <div class="form-group">
                             <label for="select-corporation">Select Corporation</label>
                             <select id="select-corporation" class="form-control" v-model="selectedCorporation" required>
-                                <option v-for="corporation in corporations" :value="corporation">{{ corporation.name }}</option>
+                                <option :key="corporation.id" v-for="corporation in corporations" :value="corporation">{{ corporation.name }}</option>
                             </select>
                         </div>
 
@@ -82,6 +82,8 @@
                     this.$store.commit('selectCorporation', this.selectedCorporation);
 
                     localStorage.setItem('selectedCorporation', JSON.stringify(this.selectedCorporation));
+
+                    axios.defaults.headers.common['CORPORATION-ID'] = this.selectedCorporation.id;
 
                     Broadcast.$emit('ChangeCorporation', { corporation: this.selectedCorporation });
 

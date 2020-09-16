@@ -64,7 +64,11 @@ class Item extends Model
      */
     public function getNameIdentifierAttribute()
     {
-        return "{$this->name} {$this->identifier} {$this->itemType->display_name}";
+        if ($this->identifier == null || $this->identifier == '') {
+            return "{$this->brand->display_name} {$this->name} {$this->itemType->display_name}";
+        }
+
+        return "{$this->brand->display_name} {$this->name} {$this->identifier} {$this->itemType->display_name}";
     }
 
     /**

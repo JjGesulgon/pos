@@ -2,30 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SalesItemPriceResource;
-use App\Repositories\SalesItemPriceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\UnitOfMeasurementResource;
+use App\Repositories\UnitOfMeasurementRepository;
 
-class SalesItemPricesController extends Controller
+class UnitOfMeasurementsController extends Controller
 {
     /**
-     * SalesItemPrice repository.
+     * UnitOfMeasurement repository.
      *
-     * @var App\Repositories\SalesItemPriceRepository
+     * @var App\Repositories\UnitOfMeasurementRepository
      */
-    protected $salesItemPrice;
-    
+    protected $unitOfMeasurement;
+
     /**
-     * Create new instance of sales item price controller.
+     * Create new instance of unit of measurement controller.
      *
-     * @param SalesItemPriceRepository $salesItemPrice
+     * @param UnitOfMeasurementRepository unitOfMeasurement UnitOfMeasurement repository
      */
-    public function __construct(SalesItemPriceRepository $salesItemPrice)
+    public function __construct(UnitOfMeasurementRepository $unitOfMeasurement)
     {
-        $this->salesItemPriceRepository = $salesItemPrice;
+        $this->unitOfMeasurementRepository = $unitOfMeasurement;
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -33,23 +33,23 @@ class SalesItemPricesController extends Controller
      */
     public function index()
     {
-        $salesItemPrices = SalesItemPriceResource::collection(
-            $this->salesItemPriceRepository->paginateWithFilters(
+        $unitOfMeasurements = UnitOfMeasurementResource::collection(
+            $this->unitOfMeasurementRepository->paginateWithFilters(
                 request(),
                 request()->per_page,
                 request()->order_by
             )
         );
 
-        if (! $salesItemPrices) {
+        if (! $unitOfMeasurements) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
-    
-        return $salesItemPrices;
+
+        return $unitOfMeasurements;
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -59,30 +59,28 @@ class SalesItemPricesController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'item_id'                => 'required|integer',
-            'measuring_mass_id'      => 'required|integer',
-            'unit_of_measurement_id' => 'required|integer',
-            'price'                  => 'required|numeric'
+            'name'          =>  'required|string|min:3|max:255',
+            'abbreviation'  =>  'required|string|max:255'
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors'  => $validator->errors()
             ], 400);
         }
-    
-        if (! $this->salesItemPriceRepository->store($request)) {
+
+        if (! $this->unitOfMeasurementRepository->store($request)) {
             return response()->json([
                 'message' => 'Failed to store resource'
             ], 500);
         }
-    
+
         return response()->json([
             'message' => 'Resource successfully stored'
         ], 200);
     }
-    
+
     /**
      * Display the specified resource.
      *
@@ -91,18 +89,18 @@ class SalesItemPricesController extends Controller
      */
     public function show($id)
     {
-        if (! $salesItemPrice = $this->salesItemPriceRepository->findOrFail($id)) {
+        if (! $unitOfMeasurement = $this->unitOfMeasurementRepository->findOrFail($id)) {
             return response()->json([
                 'message' => 'Resource does not exist'
             ], 400);
         }
-    
+
         return response()->json([
-            'message'          => 'Resource successfully retrieve',
-            'sales_item_price' => $salesItemPrice
+            'message' => 'Resource successfully retrieve',
+            'unit_of_measurement' => $unitOfMeasurement
         ], 200);
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
@@ -113,30 +111,28 @@ class SalesItemPricesController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'item_id'                => 'required|integer',
-            'measuring_mass_id'      => 'required|integer',
-            'unit_of_measurement_id' => 'required|integer',
-            'price'                  => 'required|numeric'
+            'name'          =>  'required|string|min:3|max:255',
+            'abbreviation'  =>  'required|string|max:255'
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors'  => $validator->errors()
             ], 400);
         }
-    
-        if (! $this->salesItemPriceRepository->update($request, $id)) {
+
+        if (! $this->unitOfMeasurementRepository->update($request, $id)) {
             return response()->json([
                 'message' => 'Failed to update resource'
             ], 500);
         }
-    
+
         return response()->json([
             'message' => 'Resource successfully updated'
         ], 200);
     }
-    
+
     /**
      * Remove the specified resource from storage.
      *
@@ -145,17 +141,17 @@ class SalesItemPricesController extends Controller
      */
     public function destroy($id)
     {
-        if (! $this->salesItemPriceRepository->findOrFail($id)->delete()) {
+        if (! $this->unitOfMeasurementRepository->findOrFail($id)->delete()) {
             return response()->json([
                 'message' => 'Failed to delete resource'
             ], 400);
         }
-    
+
         return response()->json([
             'message' => 'Resource successfully deleted'
         ], 200);
     }
-    
+
     /**
      * Restore the specified resource from storage.
      *
@@ -164,17 +160,17 @@ class SalesItemPricesController extends Controller
      */
     public function restore($id)
     {
-        if (! $this->salesItemPriceRepository->restore($id)) {
+        if (! $this->unitOfMeasurementRepository->restore($id)) {
             return response()->json([
                 'message' => 'Failed to restore resource'
             ], 400);
         }
-    
+
         return response()->json([
             'message' => 'Resource successfully restored'
         ], 200);
     }
-    
+
     /**
      * Forcefully remove the specified resource from storage.
      *
@@ -183,12 +179,12 @@ class SalesItemPricesController extends Controller
      */
     public function forceDestroy($id)
     {
-        if (! $this->salesItemPriceRepository->forceDestroy($id)) {
+        if (! $this->unitOfMeasurementRepository->forceDestroy($id)) {
             return response()->json([
                 'message' => 'Failed to permanently delete resource'
             ], 400);
         }
-    
+
         return response()->json([
             'message' => 'Resource successfully deleted permanently'
         ], 200);
@@ -202,14 +198,14 @@ class SalesItemPricesController extends Controller
      */
     public function search(Request $request)
     {
-        $salesItemPrice = $this->salesItemPriceRepository->search($request);
+        $unitOfMeasurements = $this->unitOfMeasurementRepository->search($request);
 
-        if (! $salesItemPrice) {
+        if (! $unitOfMeasurements) {
             return response()->json([
                 'message' => 'Failed to retrieve resource'
             ], 400);
         }
 
-        return $salesItemPrice;
+        return $unitOfMeasurements;
     }
 }

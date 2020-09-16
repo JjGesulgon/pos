@@ -12,7 +12,7 @@
             <li class="nav-item">
                 <span class="nav-link"><i class="fas fa-briefcase"></i>&nbsp; Business Functions</span>
             </li>
-
+<!-- 
             <li class="nav-item">
                 <a class="nav-link" href="#contacts" data-toggle="collapse" aria-expanded="false" aria-controls="contacts">
                     Contacts <i class="float-right fas fa-caret-down"></i>
@@ -63,7 +63,7 @@
                         <router-link class="nav-link" :to="{ name: 'sales-item-prices.index' }">View Sales Item Prices</router-link>
                     </li>
                 </ul>
-            </div>
+            </div> -->
 
             <li class="nav-item">
                 <a class="nav-link" href="#transactions" data-toggle="collapse" aria-expanded="false" aria-controls="transactions">
@@ -82,7 +82,7 @@
             </div>
         </ul>
         
-        <ul class="nav flex-column background py-1 mt-3 sidebar-nav">
+        <!-- <ul class="nav flex-column background py-1 mt-3 sidebar-nav">
             <li class="nav-item">
                 <span class="nav-link"><i class="fas fa-user"></i>&nbsp; Manage Users</span>
             </li>
@@ -90,7 +90,7 @@
             <li class="nav-item">
                 <router-link class="nav-link" :to="{ name: 'users.index' }">Users</router-link>
             </li>
-        </ul>
+        </ul> -->
     </div>
 </template>
 

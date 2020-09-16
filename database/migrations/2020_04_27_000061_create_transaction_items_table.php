@@ -19,30 +19,30 @@ class CreateTransactionItemsTable extends Migration
             $table->foreign('transaction_id')
                 ->references('id')
                 ->on('transactions');
+            $table->bigInteger('corporation_id')->unsigned();
+            $table->foreign('corporation_id')
+                ->references('id')
+                ->on('corporations');
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
             $table->bigInteger('item_id')->unsigned();
             $table->foreign('item_id')
                 ->references('id')
-                ->on('items')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->on('items');
             $table->bigInteger('measuring_mass_id')->unsigned();
             $table->foreign('measuring_mass_id')
                 ->references('id')
-                ->on('measuring_mass')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->on('measuring_mass');
             $table->bigInteger('unit_of_measurement_id')->unsigned();
             $table->foreign('unit_of_measurement_id')
                 ->references('id')
-                ->on('unit_of_measurements')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->on('unit_of_measurements');
             $table->bigInteger('sales_item_price_id')->unsigned();
             $table->foreign('sales_item_price_id')
                 ->references('id')
-                ->on('sales_item_prices')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->on('sales_item_prices');
             $table->bigInteger('quantity')->unsigned();
             $table->json('item_sales_discounts')->nullable();
             $table->json('brand_sales_discounts')->nullable();

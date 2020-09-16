@@ -41,30 +41,48 @@ class Transaction extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->user_id = auth('api')->user()->id;
-            
-            $latestTransaction = Transaction::orderBy('created_at', 'DESC')->first();
-
-            if (!$latestTransaction) {
-                return $model->number = '#'.str_pad(1, 8, "0", STR_PAD_LEFT);
+            if (request()->headers->get('CORPORATION-ID')) {
+                $model->corporation_id = request()->headers->get('CORPORATION-ID');
             }
 
-            return $model->number = '#'.str_pad($latestTransaction->id + 1, 8, "0", STR_PAD_LEFT);
-        });
+            if (auth('api')->check()) {
+                $model->user_id = auth('api')->user()->id;
+            }
 
-        static::updating(function ($model) {
-            $model->user_id = auth('api')->user()->id;
+            if (request()->headers->get('USER-ID')) {
+                $model->user_id = request()->headers->get('USER-ID');
+            }
         });
     }
 
     /**
-    * The transaction belongs to a user.
+     * The transaction belongs to a contact.
+     *
+     * @return object
+     */
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class);
+    }
+
+    /**
+    * The transaction belongs to a corporation.
     *
     * @return object
     */
-    public function user()
+    public function corporation()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Corporation::class);
+    }
+
+    /**
+     * The transaction belongs to either a warehouse or a branch.
+     *
+     * @return object
+     */
+    public function transactionableFrom()
+    {
+        return $this->morphTo();
     }
 
     /**
@@ -75,5 +93,15 @@ class Transaction extends Model
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    /**
+    * The transaction belongs to a user.
+    *
+    * @return object
+    */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -19,33 +19,28 @@ class CreateStocksTable extends Migration
             $table->foreign('corporation_id')
                 ->references('id')
                 ->on('corporations')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
             $table->morphs('stockable', 'stockable_index');
             $table->bigInteger('item_id')->unsigned();
             $table->foreign('item_id')
                 ->references('id')
                 ->on('items')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
             $table->bigInteger('measuring_mass_id')->unsigned();
             $table->foreign('measuring_mass_id')
                 ->references('id')
                 ->on('measuring_mass')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
             $table->bigInteger('unit_of_measurement_id')->unsigned();
             $table->foreign('unit_of_measurement_id')
                 ->references('id')
                 ->on('unit_of_measurements')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
             $table->bigInteger('quantity')->unsigned();
             $table->timestamps();
             $table->softDeletes();

@@ -40,6 +40,15 @@
             }
         },
 
+        watch: {
+            selectedObject: function(newValue, oldValue) {
+                this.option = newValue;
+            },
+            additionalParameters: function(newValue, oldValue) {
+                this.options = [];
+            }
+        },
+
         methods: {
             onSearch(value, loading) {
                 loading(true);
