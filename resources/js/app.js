@@ -53,6 +53,7 @@ Vue.component('form-create', require('./components/FormCreate.vue'));
 Vue.component('form-view', require('./components/FormView.vue'));
 Vue.component('form-edit', require('./components/FormEdit.vue'));
 Vue.component('breadcrumbs', require('./components/Breadcrumbs.vue'));
+Vue.component('line-chart', require('./components/Chart.vue'));
 
 const app = new Vue({
     el: '#app',
