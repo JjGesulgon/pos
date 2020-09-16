@@ -220,22 +220,24 @@ class TransactionsController extends Controller
         return $transactions;
     }
 
-    /**
-     * Search the specified data from the storage.
+/**
+     * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request   $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function getTotalTransactions(Request $request)
+    public function getTotalTransaction($startDate, $endDate)
     {
-        $totalTransactions = $this->transactionRepository->getTotalTransactions($request);
-    
-        if (! $totalTransactions) {
+        if (! $transactions = $this->transactionRepository->getTotalTransaction($startDate, $endDate)) {
             return response()->json([
-                'message' => 'Failed to retrieve resource'
+                'message' => 'Resource does not exist'
             ], 400);
         }
-    
-        return $totalTransactions;
+
+        return response()->json([
+            'response' => true,
+            'message'  => 'Resource successfully retrieve',
+            'transaction'    => $transactions
+        ], 200);
     }
 }

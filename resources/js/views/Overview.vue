@@ -163,7 +163,7 @@
                     endDate: end
                 };
 
-                axios.get('/api/transactions/get-total-transactions', data ).then(res => {
+                axios.get('/api/transactions/get-total-transactions/' + data.startDate + "/" + data.endDate ).then(res => {
                     switch(span){
                         case 'today':
                         this.totalTransactions = res.data.transaction;
@@ -253,13 +253,12 @@
                 })
 
                 for (var i = 0; i < this.filteredDates.length; i++) {
-                    this.startDates[i] = this.formatDate(new Date(this.filteredDates[i]), false);
-                    this.chartDataset[i] = monthTransaction.filter(({created_at}) => {
-                        return this.formatDate(new Date(created_at), false) == this.startDates[i].reduce((sum, transaction_item) => {
-                            return sum += parseFloat(transaction_item.grand_total_amount);
-                        }, 0);
-                    });
-                }   
+                  this.startDates[i] = this.formatDate(new Date(this.filteredDates[i]), false)
+                  this.chartDataset[i] = monthTransaction.filter(({created_at}) => this.formatDate(new Date(created_at), false) == this.startDates[i])
+                                                        .reduce((sum, transaction_item) => {
+                                                          return sum += parseFloat(transaction_item.grand_total_amount);
+                                                          }, 0);
+                }    
 
                 this.currentMonth = monthNames[new Date(this.dates[0]).getMonth()];
             }

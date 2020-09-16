@@ -107,13 +107,16 @@ class TransactionRepository extends Repository
         }
     }
 
-    /**
+/**
      * Get the transaction filtered by date range
      *
      * @return array json object
      */
-    public function getTotalTransactions($request)
-    {
-        return $this->transaction->whereBetween('created_at', [$request->startDate, $request->endDate])->get();
+    public function getTotalTransaction($startDate, $endDate)
+    {        
+        $transaction = $this->transaction
+                            ->whereBetween('created_at', [$startDate, $endDate])
+                            ->get();
+        return $transaction;
     }
 }
