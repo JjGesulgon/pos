@@ -62,7 +62,7 @@ class CorporationsController extends Controller
             'city'        => 'required|string|min:2|max:255',
             'state'       => 'required|string|min:2|max:255',
             'zip_code'    => 'required|integer',
-            'fax'         => 'required|string|min:0|max:255'
+            'fax'         => 'nullable|string|min:0|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -125,7 +125,7 @@ class CorporationsController extends Controller
             'city'        => 'required|string|min:2|max:255',
             'state'       => 'required|string|min:2|max:255',
             'zip_code'    => 'required|integer',
-            'fax'         => 'required|string|min:0|max:255'
+            'fax'         => 'nullable|string|min:0|max:255'
         ]);
 
         if ($validator->fails()) {
