@@ -83,7 +83,7 @@ Route::group(['middleware' => ['api']], function () {
     // Transactions
     Route::match(['put', 'patch'], '/transactions/{transaction}/restore', 'TransactionsController@restore');
     Route::delete('/transactions/{transaction}/force-delete', 'TransactionsController@forceDestroy');
-    Route::post('/transactions/get-total-transactions', 'TransactionsController@getTotalTransaction');
+    Route::get('/transactions/get-total-transactions', 'TransactionsController@getTotalTransactions');
     Route::apiResource('transactions', 'TransactionsController');
 
     // Users

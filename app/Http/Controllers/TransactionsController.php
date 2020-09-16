@@ -219,4 +219,23 @@ class TransactionsController extends Controller
     
         return $transactions;
     }
+
+    /**
+     * Search the specified data from the storage.
+     *
+     * @param  \Illuminate\Http\Request   $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getTotalTransactions(Request $request)
+    {
+        $totalTransactions = $this->transactionRepository->getTotalTransactions($request);
+    
+        if (! $totalTransactions) {
+            return response()->json([
+                'message' => 'Failed to retrieve resource'
+            ], 400);
+        }
+    
+        return $totalTransactions;
+    }
 }
