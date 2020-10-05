@@ -123,7 +123,8 @@ trait Imaging
             $defaultResolution = self::defaultResolution();
             $compressionRate   = self::compressionRate();
 
-            $image        = request()->image;
+            // $image        = request()->image;
+            $image        = $model->image;
             $imageName    = uniqid() . '.jpg';
             $model->image = $imageName;
 
